@@ -12,6 +12,7 @@ import {
   Post,
   Req,
   Request,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -23,6 +24,9 @@ import { ILogin } from '@Interfaces/Meta/IUser.meta';
 import { ValidateLogin } from '@Meta/User.validate';
 import { validate } from '@Utils/validate.utils';
 import { serialize } from 'class-transformer';
+import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
+import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
+import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -57,6 +61,8 @@ export class UserController {
     return response(200, 'success', await this.cacheManager.get(authorization));
   }
 
+  @hasRoles('ADMIN', 'MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('list')
   @UseInterceptors(ClassSerializerInterceptor)
   async list() {

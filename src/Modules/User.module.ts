@@ -10,10 +10,15 @@ import { UserController } from '@Controllers/UserController';
 import { UserService } from '@Services/UserService';
 import { UserRepository } from '@Repositories/User.repository';
 import { UserMiddleware } from '@Middlewares/UserMiddleware';
+import { AuthModule } from './Auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRepository]), CacheModule.register()],
-  exports: [TypeOrmModule],
+  imports: [
+    TypeOrmModule.forFeature([UserRepository]),
+    CacheModule.register(),
+    AuthModule,
+  ],
+  exports: [TypeOrmModule, UserService, AuthModule],
   providers: [UserService],
   controllers: [UserController],
 })

@@ -1,10 +1,22 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UserService } from '@Services/UserService';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -15,8 +27,12 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
 
-    return true;
+    return new Promise((resolve, reject) => {
+      this.userService.findById(request.user.id).then((user) => {
+        const hasRole = () => roles.indexOf(user.role.code) > -1;
+        resolve(hasRole());
+      });
+    });
   }
 }
