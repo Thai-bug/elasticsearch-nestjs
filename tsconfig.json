@@ -54,6 +54,12 @@
 			"@Modules": [
 				"src/Modules"
 			],
+			"@Middlewares/*": [
+				"src/Middlewares/*"
+			],
+			"@Middlewares": [
+				"src/Middlewares"
+			],
 			"@Utils/*": [
 				"src/Utils/*"
 			],

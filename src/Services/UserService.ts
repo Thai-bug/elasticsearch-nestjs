@@ -20,8 +20,6 @@ export class UserService extends BaseService<User, UserRepository> implements IU
   }
 
   async login(options): Promise<User | null> {
-    this.logger.log('Getting login...', '123');
-
     const user = await this.getUser({email: options.email, status: true});
     if(!user || !(await UserService.comparePassword(options.password, user.password))) {
       return null;

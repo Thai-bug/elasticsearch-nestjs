@@ -1,10 +1,15 @@
 import { User } from '@Entities/User.entity';
 import { UsersModule } from '@Modules/User.module';
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  MiddlewareConsumer,
+  RequestMethod,
+  NestModule,
+  CacheModule,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './Controllers/UserController';
-import { UserService } from './Services/UserService';
+import { LoggerMiddleware } from '@Middlewares/LoggerMiddleware';
 
 @Module({
   imports: [
@@ -15,14 +20,19 @@ import { UserService } from './Services/UserService';
       username: 'thai-bug',
       password: '12022021',
       database: 'fake-store',
-      entities: [
-        User
-      ],
+      entities: [User],
       synchronize: true,
-      autoLoadEntities: true
+      autoLoadEntities: true,
     }),
     UsersModule,
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    CacheModule.register(),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

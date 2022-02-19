@@ -1,29 +1,56 @@
 import { User } from '@Entities/User.entity';
-import { Login } from '@Meta/User';
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Res, Response } from '@nestjs/common';
+import {
+  Body,
+  CACHE_MANAGER,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Post,
+  Req,
+  Request,
+} from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { MyLogger } from '@Services/LoggerService';
 import { generateAToken } from '@Utils/token.utils';
 import { UserService } from 'src/Services/UserService';
 import { response } from '@Utils/response.utils';
+import { ILogin } from '@Interfaces/Meta/IUser.meta';
+import { ValidateLogin } from '@Meta/User.validate';
+import { validate } from '@Utils/validate.utils';
 
 @Controller('/api/v1/users')
 export class UserController {
   private readonly logger = new MyLogger(UserController.name);
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('login')
-  @HttpCode(200)
-  async login(@Body() info: Login) {
-    this.logger.log('/login', info);
-    const user = await this.userService.login({ ...info });
+  async login(@Body() info: ILogin) {
+    const validateInfo = await validate(ValidateLogin, info);
+    if (validateInfo instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateInfo.message, null);
+
+    const user = await this.userService.login({ ...validateInfo });
+
     if (!user) {
-      // return response(res, 404, 'Invalid username or password', {});
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      return response(404, 'invalid email or password', null);
     }
 
-    return response(res, 200, 'Login successfully', {
+    return response(200, 'login successfully', {
       token: generateAToken(user, 'access'),
       refreshToken: generateAToken(user, 'refresh'),
     });
+  }
+
+  @Get('detail')
+  async detail(@Req() request: Request) {
+    const authorization = Object(request.headers).authorization.split(' ')[1];
+
+    return response(200, 'success', await this.cacheManager.get(authorization));
   }
 }
