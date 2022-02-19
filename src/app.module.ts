@@ -1,6 +1,7 @@
 import { User } from '@Entities/User.entity';
 import { UsersModule } from '@Modules/User.module';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './Controllers/UserController';
 import { UserService } from './Services/UserService';
@@ -20,9 +21,8 @@ import { UserService } from './Services/UserService';
       synchronize: true,
       autoLoadEntities: true
     }),
-    UsersModule
+    UsersModule,
+    ConfigModule.forRoot()
   ],
-  controllers: [UserController],
-  providers: [UserService],
 })
 export class AppModule {}
