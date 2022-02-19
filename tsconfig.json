@@ -1,0 +1,77 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+			"@MicroServices/*": [
+				"services/*"
+			],
+			"@MicroServices": [
+				"services"
+			],
+			"@Interfaces/*": [
+				"src/Interfaces/*"
+			],
+			"@Interfaces": [
+				"src/Interfaces"
+			],
+			"@Repositories/*": [
+				"src/Repositories/*"
+			],
+			"@Repositories": [
+				"src/Repositories"
+			],
+			"@ServiceHelpers/*": [
+				"src/ServiceHelpers/*"
+			],
+			"@ServiceHelpers": [
+				"src/ServiceHelpers"
+			],
+			"@Meta/*": [
+				"src/Meta/*"
+			],
+			"@Meta": [
+				"src/Meta"
+			],
+			"@Entities/*": [
+				"src/Entities/*"
+			],
+			"@Entities": [
+				"src/Entities"
+			],
+			"@Modules/*": [
+				"src/Modules/*"
+			],
+			"@Modules": [
+				"src/Modules"
+			],
+			"@Utils/*": [
+				"src/Utils/*"
+			],
+			"@Utils": [
+				"src/Utils"
+			],
+			"@Test/*": [
+				"test/*"
+			],
+			"@Test": [
+				"test"
+			]
+		}
+  }
+}
