@@ -2,6 +2,7 @@ import { User } from '@Entities/User.entity';
 import {
   Body,
   CACHE_MANAGER,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -11,6 +12,7 @@ import {
   Post,
   Req,
   Request,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { MyLogger } from '@Services/LoggerService';
@@ -20,6 +22,7 @@ import { response } from '@Utils/response.utils';
 import { ILogin } from '@Interfaces/Meta/IUser.meta';
 import { ValidateLogin } from '@Meta/User.validate';
 import { validate } from '@Utils/validate.utils';
+import { serialize } from 'class-transformer';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -52,5 +55,16 @@ export class UserController {
     const authorization = Object(request.headers).authorization.split(' ')[1];
 
     return response(200, 'success', await this.cacheManager.get(authorization));
+  }
+
+  @Get('list')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async list() {
+    const data = await this.userService.list({});
+
+    return response(200, 'success', {
+      data: JSON.parse(serialize(data[0])),
+      total: data[1],
+    });
   }
 }

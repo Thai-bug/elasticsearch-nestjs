@@ -24,7 +24,10 @@ export class UserMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const authentication = req.headers.authorization?.split(' ')[1];
     const cachedUser = await this.cacheManager.get(authentication);
-    if (cachedUser) return next();
+    if (cachedUser) {
+      req['user'] = cachedUser;
+      return next();
+    }
 
     const decodedToken = verifyAToken(authentication, 'access');
     if (decodedToken instanceof Error) {
@@ -34,6 +37,8 @@ export class UserMiddleware implements NestMiddleware {
 
     const user = await this.userService.getUser({ id: decodedToken.id });
     delete user.password;
+
+    req['user'] = user;
 
     this.cacheManager.set(authentication, user, {
       ttl: 60 * 30,

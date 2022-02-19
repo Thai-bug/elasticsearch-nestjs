@@ -28,6 +28,10 @@ export class UserService extends BaseService<User, UserRepository> implements IU
     return user;
   }
 
+  async list(option: any): Promise<[User[], number]> {
+    return this.repository.findAndCount(option);
+  }
+
   static async comparePassword(password: string, hash: string): Promise<boolean> {
     return await compare(password, hash);
   }

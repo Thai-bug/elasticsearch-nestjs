@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from './Role.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -15,6 +17,7 @@ export class User extends BaseEntity {
   email: string;
 
   @Column('text', { name: 'password' })
+  @Exclude()
   password: string;
 
   @Column('boolean', { name: 'status', default: true })
@@ -22,4 +25,8 @@ export class User extends BaseEntity {
 
   @Column('timestamp', { name: 'created_at', default: ()=> 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @ManyToOne(type => Role, role => role.users, {eager: true})
+  @JoinColumn({name: 'role_id'})
+  role: Role;
 }
