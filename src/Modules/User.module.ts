@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { UserController } from '@Controllers/UserController';
+import { UserController } from '@Controllers/User.controller';
 import { UserService } from '@Services/UserService';
 import { UserRepository } from '@Repositories/User.repository';
 import { UserMiddleware } from '@Middlewares/UserMiddleware';
@@ -27,6 +27,6 @@ export class UsersModule {
     consumer
       .apply(UserMiddleware)
       .exclude({ path: 'api/v1/users/login', method: RequestMethod.POST })
-      .forRoutes({ path: 'api/v1/users/detail', method: RequestMethod.GET });
+      .forRoutes({ path: 'api/v1/users/detail', method: RequestMethod.ALL });
   }
 }

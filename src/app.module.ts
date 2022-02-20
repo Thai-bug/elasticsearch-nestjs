@@ -11,6 +11,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from '@Middlewares/LoggerMiddleware';
 import { Role } from '@Entities/Role.entity';
+import { CategoryModule } from '@Modules/Category.module';
+import { Category } from '@Entities/Category.entity';
 
 @Module({
   imports: [
@@ -21,11 +23,12 @@ import { Role } from '@Entities/Role.entity';
       username: 'thai-bug',
       password: '12022021',
       database: 'fake-store',
-      entities: [User, Role],
+      entities: [User, Role, Category],
       // synchronize: true,
       autoLoadEntities: true,
     }),
     UsersModule,
+    CategoryModule,
     ConfigModule.forRoot(),
     CacheModule.register(),
   ],
