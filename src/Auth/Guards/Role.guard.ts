@@ -6,6 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { CategoryService } from '@Services/CategoryService';
 import { UserService } from '@Services/UserService';
 import { Observable } from 'rxjs';
 

@@ -5,8 +5,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  HttpCode,
-  HttpException,
   HttpStatus,
   Inject,
   Post,
@@ -63,7 +61,7 @@ export class UserController {
     return response(200, 'success', await this.cacheManager.get(authorization));
   }
 
-  @hasRoles('ADMIN', 'MANAGER')
+  @hasRoles('ADMIN', 'MANAGER', 'MANAGER_USER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('list')
   @UseInterceptors(ClassSerializerInterceptor)

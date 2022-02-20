@@ -5,11 +5,13 @@ import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { JwtStrategy } from 'src/Auth/Guards/JwtStrategy.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 import { AuthService } from 'src/Auth/Services/Auth.service';
+import { CategoryModule } from './Category.module';
 import { UsersModule } from './User.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    forwardRef(() => CategoryModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
