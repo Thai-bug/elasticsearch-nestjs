@@ -56,6 +56,7 @@ export class UserController {
   }
 
   @Get('detail')
+  @UseInterceptors(ClassSerializerInterceptor)
   async detail(@Req() request: Request) {
     const authorization = Object(request.headers).authorization.split(' ')[1];
 

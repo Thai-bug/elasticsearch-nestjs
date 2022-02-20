@@ -27,6 +27,6 @@ export class UsersModule {
     consumer
       .apply(UserMiddleware)
       .exclude({ path: 'api/v1/users/login', method: RequestMethod.POST })
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: 'api/v1/users/detail', method: RequestMethod.GET });
   }
 }

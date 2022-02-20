@@ -8,7 +8,7 @@ export const generateAToken = (user: User, type: string) => {
 
     default:
       return jwt.sign({ id: user.id }, process.env.ACCESS_KEY, {
-        expiresIn: '3h',
+        expiresIn: '31d',
       });
   }
 };

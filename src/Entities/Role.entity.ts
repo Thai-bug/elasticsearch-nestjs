@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
   Column,
@@ -17,6 +18,7 @@ export class Role extends BaseEntity {
   title: string;
 
   @Column('text', { name: 'code', unique: true })
+  @Exclude()
   code: string;
 
   @Column('boolean', { name: 'status', default: true })
