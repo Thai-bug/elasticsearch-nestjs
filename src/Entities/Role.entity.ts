@@ -28,6 +28,6 @@ export class Role extends BaseEntity {
   })
   createdAt: Date;
 
-  @OneToMany((type) => User, (user) => user.role,)
+  @OneToMany((type) => User, (user) => user.role)
   users: User[];
 }

@@ -21,10 +21,7 @@ import { Role } from '@Entities/Role.entity';
       username: 'thai-bug',
       password: '12022021',
       database: 'fake-store',
-      entities: [
-        User,
-        Role
-      ],
+      entities: [User, Role],
       // synchronize: true,
       autoLoadEntities: true,
     }),

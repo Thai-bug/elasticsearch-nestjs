@@ -1,5 +1,5 @@
 import { IUserService } from '@Interfaces/Services/IUser.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { User } from '@Entities/User.entity';
 import { BaseService } from './BaseService';
@@ -8,10 +8,13 @@ import { MyLogger } from './LoggerService';
 import { compare } from '@Utils/bcrypt';
 
 @Injectable()
-export class UserService extends BaseService<User, UserRepository> implements IUserService {
+export class UserService
+  extends BaseService<User, UserRepository>
+  implements IUserService
+{
   private readonly logger = new MyLogger(UserService.name);
   constructor(repository: UserRepository) {
-    super(repository)
+    super(repository);
   }
 
   async getUser(options): Promise<User> {
@@ -20,8 +23,11 @@ export class UserService extends BaseService<User, UserRepository> implements IU
   }
 
   async login(options): Promise<User | null> {
-    const user = await this.getUser({email: options.email, status: true});
-    if(!user || !(await UserService.comparePassword(options.password, user.password))) {
+    const user = await this.getUser({ email: options.email, status: true });
+    if (
+      !user ||
+      !(await UserService.comparePassword(options.password, user.password))
+    ) {
       return null;
     }
 
@@ -32,7 +38,15 @@ export class UserService extends BaseService<User, UserRepository> implements IU
     return this.repository.findAndCount(option);
   }
 
-  static async comparePassword(password: string, hash: string): Promise<boolean> {
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.getUser({ email: email });
+    return user;
+  }
+
+  static async comparePassword(
+    password: string,
+    hash: string,
+  ): Promise<boolean> {
     return await compare(password, hash);
   }
 }

@@ -14,10 +14,10 @@ import { UsersModule } from './User.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-          secret: configService.get('ACCESS_KEY'),
-          signOptions: { expiresIn: '1d' }
-      })
-  }),
+        secret: configService.get('ACCESS_KEY'),
+        signOptions: { expiresIn: '1d' },
+      }),
+    }),
   ],
   providers: [AuthService, RolesGuard, JwtAuthGuard, JwtStrategy],
   exports: [AuthService],

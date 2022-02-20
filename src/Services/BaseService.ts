@@ -2,7 +2,9 @@ import { IBaseService } from '@Interfaces/Services/IBaseService';
 import { BaseEntity, Repository } from 'typeorm';
 import { EntityId } from 'typeorm/repository/EntityId';
 
-export class BaseService<T extends BaseEntity, R extends Repository<T>> implements IBaseService<T> {
+export class BaseService<T extends BaseEntity, R extends Repository<T>>
+  implements IBaseService<T>
+{
   protected readonly repository: R;
 
   constructor(repository: R) {
@@ -22,7 +24,7 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>> implemen
   }
 
   store(data: any): Promise<T> {
-    return this.repository.save(data);
+    return this.repository.save(data).catch((e) => e);
   }
 
   async update(id: EntityId, data: any): Promise<T> {

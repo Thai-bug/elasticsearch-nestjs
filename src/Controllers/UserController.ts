@@ -21,12 +21,13 @@ import { generateAToken } from '@Utils/token.utils';
 import { UserService } from 'src/Services/UserService';
 import { response } from '@Utils/response.utils';
 import { ILogin } from '@Interfaces/Meta/IUser.meta';
-import { ValidateLogin } from '@Meta/User.validate';
+import { ValidateLogin, ValidateRegister } from '@Meta/User.validate';
 import { validate } from '@Utils/validate.utils';
 import { serialize } from 'class-transformer';
 import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
+import { randomString } from '@Utils/crypto';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -72,5 +73,23 @@ export class UserController {
       data: JSON.parse(serialize(data[0])),
       total: data[1],
     });
+  }
+
+  @hasRoles('ADMIN', 'MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('create')
+  async register(@Body() info: User) {
+    const validateInfo = await validate(ValidateRegister, info);
+
+    if (validateInfo instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateInfo.message, null);
+
+    info.code = randomString().toUpperCase();
+    const result = await this.userService.store(info);
+
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, 'failed', null);
+
+    return response(200, 'success', result);
   }
 }
