@@ -18,12 +18,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-			"@MicroServices/*": [
-				"services/*"
-			],
-			"@MicroServices": [
-				"services"
-			],
 			"@Interfaces/*": [
 				"src/Interfaces/*"
 			],
@@ -60,11 +54,29 @@
 			"@Modules": [
 				"src/Modules"
 			],
+			"@Middlewares/*": [
+				"src/Middlewares/*"
+			],
+			"@Middlewares": [
+				"src/Middlewares"
+			],
 			"@Utils/*": [
 				"src/Utils/*"
 			],
 			"@Utils": [
 				"src/Utils"
+			],
+			"@Controllers/*": [
+				"src/Controllers/*"
+			],
+			"@Controllers": [
+				"src/Controllers"
+			],
+			"@Services/*": [
+				"src/Services/*"
+			],
+			"@Services": [
+				"src/Services"
 			],
 			"@Test/*": [
 				"test/*"
