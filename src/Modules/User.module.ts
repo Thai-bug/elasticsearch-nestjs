@@ -11,6 +11,7 @@ import { UserService } from '@Services/UserService';
 import { UserRepository } from '@Repositories/User.repository';
 import { UserMiddleware } from '@Middlewares/UserMiddleware';
 import { AuthModule } from './Auth.module';
+import { CategoryService } from '@Services/CategoryService';
 
 @Module({
   imports: [

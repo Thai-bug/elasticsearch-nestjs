@@ -49,7 +49,7 @@ export class CategoryController {
     });
   }
 
-  @hasRoles('ADMIN', 'MANAGER', 'MANAGER_PRODUCT')
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('admin/list')
   @UseInterceptors(ClassSerializerInterceptor)

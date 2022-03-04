@@ -14,6 +14,9 @@ export class Category extends BaseEntity {
   @Column('boolean', { name: 'status', default: true })
   status: boolean;
 
+  @Column('jsonb', {name: 'extra_info', default: {}})
+  extraInfo: object;
+
   @Column('timestamp', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',

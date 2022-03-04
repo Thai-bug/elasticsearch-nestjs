@@ -16,21 +16,22 @@ import { Category } from '@Entities/Category.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    CacheModule.register(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '127.0.0.1',
-      port: 9013,
-      username: 'thai-bug',
-      password: '12022021',
-      database: 'fake-store',
+      host: process.env.DATABASE_SERVER,
+      port: +process.env.DATABASE_PORT,
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [User, Role, Category],
-      // synchronize: true,
+      synchronize: true,
       autoLoadEntities: true,
     }),
     UsersModule,
     CategoryModule,
-    ConfigModule.forRoot(),
-    CacheModule.register(),
+    
   ],
 })
 export class AppModule implements NestModule {
