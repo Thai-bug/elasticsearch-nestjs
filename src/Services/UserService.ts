@@ -43,6 +43,11 @@ export class UserService
     return user;
   }
 
+  async updateProfile(info: any): Promise<boolean>{
+    
+return true;
+  }
+
   static async comparePassword(
     password: string,
     hash: string,

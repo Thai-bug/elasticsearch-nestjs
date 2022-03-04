@@ -50,3 +50,16 @@ export const ValidateRegister = Joi.object({
       'any.required': 'role is required',
     }),
 });
+
+export const ValidateProfile = Joi.object({
+  id: Joi.number().required().messages({
+    "any.required": 'id is required',
+    'number.base': 'id is not valid'
+  }),
+  firstName: Joi.string().required().messages({
+    'any.required': 'firstName is required',
+  }),
+  lastName: Joi.string().required().messages({
+    'any.required': 'lastName is required',
+  }),
+})
