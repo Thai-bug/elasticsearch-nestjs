@@ -11,7 +11,6 @@ import { UsersModule } from './User.module';
 @Module({
   imports: [
     forwardRef(() => UsersModule),
-    forwardRef(() => CategoryModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

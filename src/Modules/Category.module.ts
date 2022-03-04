@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryRepository } from '@Repositories/Category.repository';
 import { CategoryService } from '@Services/CategoryService';
 import { AuthModule } from './Auth.module';
+import { UsersModule } from './User.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CategoryRepository]),
     CacheModule.register(),
     AuthModule,
+    UsersModule
   ],
   exports: [TypeOrmModule, CategoryService, AuthModule],
   providers: [CategoryService],
