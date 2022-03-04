@@ -50,3 +50,39 @@ export const ValidateRegister = Joi.object({
       'any.required': 'role is required',
     }),
 });
+
+export const ValidateProfile = Joi.object({
+  id: Joi.number().required().messages({
+    'any.required': 'id is required',
+    'number.base': 'id is not valid',
+  }),
+  firstName: Joi.string().required().messages({
+    'any.required': 'firstName is required',
+  }),
+  lastName: Joi.string().required().messages({
+    'any.required': 'lastName is required',
+  }),
+});
+
+export const ValidateChangePassword = Joi.object({
+  oldPassword: Joi.string().required().messages({
+    'any.required': 'oldPassword is required',
+  }),
+  newPassword: Joi.string()
+    .pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+    .min(8)
+    .required()
+    .messages({
+      'string.min': 'newPassword is not valid',
+      'any.required': 'newPassword is required',
+      'string.pattern.base': 'newPassword is not valid',
+    }),
+  matchPassword: Joi.string()
+    .required()
+    .valid(Joi.ref('newPassword'))
+    .label('Confirm password')
+    .messages({
+      'any.required': 'matchPassword is required',
+      'any.only': 'matchPassword does not match',
+    }),
+});

@@ -7,17 +7,29 @@ import {
   NestModule,
   CacheModule,
 } from '@nestjs/common';
+
+
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from '@Middlewares/LoggerMiddleware';
+import * as path from 'path';
+
 import { Role } from '@Entities/Role.entity';
 import { CategoryModule } from '@Modules/Category.module';
 import { Category } from '@Entities/Category.entity';
+import { PrivateModule } from '@Modules/Private.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     CacheModule.register(),
+
+    ServeStaticModule.forRoot({
+      serveRoot: '/cdn/public',
+      rootPath: path.join(__dirname, '..', 'public/static-files')
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_SERVER,
@@ -31,6 +43,7 @@ import { Category } from '@Entities/Category.entity';
     }),
     UsersModule,
     CategoryModule,
+    PrivateModule
     
   ],
 })
