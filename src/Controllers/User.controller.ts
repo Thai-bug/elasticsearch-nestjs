@@ -121,7 +121,7 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './public/static-files',
+        destination: './private/static-files',
         filename: (req, file, cb) => {
           const fileName: string = genRandomUUId();
           const extension: string = path.parse(file.originalname).ext;
@@ -131,9 +131,10 @@ export class UserController {
       }),
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-
-    return response(200, 'success', null);
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
+  
+    return response(200, 'success', {
+      url: `${process.env.HOST}/api/v1/private/${file.filename}`,
+    });
   }
 }

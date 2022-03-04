@@ -18,6 +18,7 @@ import * as path from 'path';
 import { Role } from '@Entities/Role.entity';
 import { CategoryModule } from '@Modules/Category.module';
 import { Category } from '@Entities/Category.entity';
+import { PrivateModule } from '@Modules/Private.module';
 
 @Module({
   imports: [
@@ -26,7 +27,6 @@ import { Category } from '@Entities/Category.entity';
 
     ServeStaticModule.forRoot({
       serveRoot: '/cdn/public',
-      // rootPath: './public/static-files',
       rootPath: path.join(__dirname, '..', 'public/static-files')
     }),
 
@@ -43,6 +43,7 @@ import { Category } from '@Entities/Category.entity';
     }),
     UsersModule,
     CategoryModule,
+    PrivateModule
     
   ],
 })
