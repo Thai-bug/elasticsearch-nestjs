@@ -1,0 +1,23 @@
+mysql
+- host: core.globalcare.vn
+- port: 1405
+- username | pw:  dev_mwg | H66du!6%yZf?YRzT
+- database name
+1. gc -> globalcare.vn
+2. mwg -> tgdd.globalcare.vn
+
+
+curl --location --request POST 'https://betagiaychungnhan.pti.com.vn/api/PUB/Fs_KENH_FILE_KY_SO' \
+--header 'UserName: kyso' \
+--header 'Password: d8b5b581203849ed20a46a7e5b616894' \
+--header 'SecretKey: 69B261D4FBF4A1735FB70AECEC4FC601' \
+--form 'ma_kenh="KYSOGCN"' \
+--form 'ma_dvi="000"' \
+--form 'so_hd="yicx59486"' \
+--form 'nv="CN.1.14"' \
+--form 'so_id_kenh="zfhi44360"' \
+--form 'so_id_kenh_g="0"' \
+--form 'so_id_pti="0"' \
+--form 'so_tc="2021113011111300"' \
+--form 'email_kh="noreply@globalcare.com.vn"' \
+--form 'File=@"/Users/2ichi/Downloads/zfhi44360.pdf"'
