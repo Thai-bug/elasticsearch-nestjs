@@ -21,6 +21,7 @@ import { UserService } from 'src/Services/UserService';
 import { response } from '@Utils/response.utils';
 import { ILogin } from '@Interfaces/Meta/IUser.meta';
 import {
+  ValidateChangePassword,
   ValidateLogin,
   ValidateProfile,
   ValidateRegister,
@@ -35,6 +36,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { genRandomUUId } from '@Utils/uuid';
+import { hash } from '@Utils/bcrypt';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -93,6 +95,7 @@ export class UserController {
       return response(HttpStatus.BAD_REQUEST, validateInfo.message, null);
 
     info.code = randomString().toUpperCase();
+    info.password = await hash(info.password);
     const result = await this.userService.store(info);
 
     if (result instanceof Error)
@@ -117,6 +120,34 @@ export class UserController {
 
   @hasRoles()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('change-password')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async changePassword(@Body() info: any, @Req() req) {
+    const validateRequest = await validate(ValidateChangePassword, info);
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const user = await this.userService.getUser({ id: req.user.id });
+    console.log(user);
+
+    if(!(await UserService.comparePassword(info.oldPassword, user.password))) {
+      return response(HttpStatus.BAD_REQUEST, 'Old password is incorrect', null);
+    }
+
+    if(await UserService.comparePassword(info.newPassword, user.password)) {
+      return response(HttpStatus.BAD_REQUEST, 'New password is the same as old password', null);
+    }
+
+    info.newPassword = await hash(info.newPassword);
+
+    const update = await this.userService.update(req.user.id, { password:  info.newPassword });
+
+    return response(200, 'success', JSON.parse(serialize(update)));
+  }
+
+  @hasRoles()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -132,7 +163,6 @@ export class UserController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
-  
     return response(200, 'success', {
       url: `${process.env.HOST}/api/v1/private/${file.filename}`,
     });
