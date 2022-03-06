@@ -1,4 +1,4 @@
-name: Node.js fake-store
+name: Node.js fake-store-staging
 
 on:
   push:
@@ -26,6 +26,5 @@ jobs:
           cd fake-store-staging
           git checkout staging
           git pull origin staging
-          git status
           yarn
           yarn build
