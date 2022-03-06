@@ -4,7 +4,9 @@ import * as jwt from 'jsonwebtoken';
 export const generateAToken = (user: User, type: string) => {
   switch (type) {
     case 'refresh':
-      return jwt.sign({ id: user.id }, process.env.REFRESH_KEY);
+      return jwt.sign({ id: user.id }, process.env.REFRESH_KEY, {
+        expiresIn: '90d',
+      });
 
     default:
       return jwt.sign({ id: user.id }, process.env.ACCESS_KEY, {
