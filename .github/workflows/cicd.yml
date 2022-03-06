@@ -1,4 +1,4 @@
-name Node.js fake-store
+name: Node.js fake-store
 
 on:
   push:
