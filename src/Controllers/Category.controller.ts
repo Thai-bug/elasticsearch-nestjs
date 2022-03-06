@@ -49,6 +49,11 @@ export class CategoryController {
     });
   }
 
+  @Get('/demo')
+  async get(){
+    return 'hello'
+  }
+
   @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('admin/list')
