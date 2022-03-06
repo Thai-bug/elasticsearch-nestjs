@@ -15,12 +15,12 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Deploy using ssh
-      uses: appleboy/ssh-action@master
-      with:
-        key: ${{ secrets.PRIVATE_KEY }}
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
+    - name: executing remote ssh commands using ssh key 
+      uses: appleboy/ssh-action@master 
+      with: 
+        host: ${{ secrets.HOST }} 
+        username: ${{ secrets.USERNAME }} 
+        key: ${{ secrets.PRIVATE_KEY }} 
         port: 22
         script: |
           cd ~/home/fake-store
