@@ -17,7 +17,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          cd ~/home/fakse-store
+          cd ~/home/fake-store
           git pull origin develop
           git status
           yarn
