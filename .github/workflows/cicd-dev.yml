@@ -23,7 +23,8 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }} 
         port: 22
         script: |
-          cd fake-store
+          cd fake-store-dev
+          git checkout develop
           git pull origin develop
           git status
           yarn

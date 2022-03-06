@@ -1,0 +1,31 @@
+name: Node.js fake-store
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [17.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: executing remote ssh commands using ssh key 
+      uses: appleboy/ssh-action@master 
+      with: 
+        host: ${{ secrets.HOST }} 
+        username: ${{ secrets.USERNAME }} 
+        key: ${{ secrets.PRIVATE_KEY }} 
+        port: 22
+        script: |
+          cd fake-store-staging
+          git checkout staging
+          git pull origin staging
+          git status
+          yarn
+          yarn build
