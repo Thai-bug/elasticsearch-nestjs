@@ -23,7 +23,7 @@ jobs:
         password: ${{ secrets.PASSWORD }} 
         port: 22
         script: |
-          cd ~/home/fake-store
+          cd /home/fake-store
           git pull origin develop
           git status
           yarn
