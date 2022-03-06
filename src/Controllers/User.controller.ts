@@ -46,24 +46,6 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-  @Post('login')
-  async login(@Body() info: ILogin) {
-    const validateInfo = await validate(ValidateLogin, info);
-    if (validateInfo instanceof Error)
-      return response(HttpStatus.BAD_REQUEST, validateInfo.message, null);
-
-    const user = await this.userService.login({ ...validateInfo });
-
-    if (!user) {
-      return response(404, 'invalid email or password', null);
-    }
-
-    return response(200, 'login successfully', {
-      token: generateAToken(user, 'access'),
-      refreshToken: generateAToken(user, 'refresh'),
-    });
-  }
-
   @Get('detail')
   @UseInterceptors(ClassSerializerInterceptor)
   async detail(@Req() request: Request) {
