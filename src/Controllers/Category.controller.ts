@@ -3,7 +3,9 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpStatus,
   Inject,
+  Post,
   Request,
   UseGuards,
   UseInterceptors,
@@ -17,6 +19,8 @@ import { ILike } from 'typeorm';
 import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
+import { validate } from '@Utils/validate.utils';
+import { ValidateCreateCategory, ValidateUpdateCategory } from '@Meta/Category.validate';
 
 @Controller('/api/v1/categories')
 export class CategoryController {
@@ -56,10 +60,10 @@ export class CategoryController {
   async getCategoriesAdmin(@Request() request: Request) {
     const limit = +request['query']?.limit || 10;
     const offset = +request['query']?.offset || 0;
-    const search = request['query']?.search;
+    const search = request['query']?.search || '';
     const [result, total] = await this.categoryService.getCategories({
       where: {
-        title: ILike(`%${search.q}%`),
+        title: ILike(`%${search}%`),
       },
       order: {
         createdAt: 'DESC',
@@ -67,9 +71,64 @@ export class CategoryController {
       take: limit,
       skip: offset,
     });
+
     return response(200, 'successfully', {
       data: JSON.parse(serialize(result)),
       total: total,
     });
+  }
+
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('create')
+  async createCategory(@Request() request: Request) {
+    const validateRequest = await validate(ValidateCreateCategory, request['body']);
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const result = await this.categoryService.store(request['body']).catch(e=>e);
+
+    switch (+result.code) {
+      case 23505:
+        return response(HttpStatus.BAD_REQUEST, 'Code is existed', null);
+    
+      default:
+        break;
+    }
+      
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, result.message, null);
+
+    return response(200, 'success', result);
+  }
+
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('update')
+  async updateCategory(@Request() request: Request) {
+    const validateRequest = await validate(ValidateUpdateCategory, request['body']);
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const result = await this.categoryService.update(
+      validateRequest.id, validateRequest
+    ).catch(e=>e);
+
+    switch (+result.code) {
+      case 23505:
+        return response(HttpStatus.BAD_REQUEST, 'Code is existed', null);
+    
+      default:
+        break;
+    }
+      
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, result.message, null);
+
+    return response(200, 'success', result);
   }
 }
