@@ -7,11 +7,11 @@ import {
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserController } from '@Controllers/User.controller';
-import { UserService } from '@Services/UserService';
+import { UserService } from '@Services/User.service';
 import { UserRepository } from '@Repositories/User.repository';
 import { UserMiddleware } from '@Middlewares/UserMiddleware';
 import { AuthModule } from './Auth.module';
-import { CategoryService } from '@Services/CategoryService';
+import { CategoryService } from '@Services/Category.service';
 
 @Module({
   imports: [

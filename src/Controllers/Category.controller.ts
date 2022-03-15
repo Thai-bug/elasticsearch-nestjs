@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { CategoryService } from '@Services/CategoryService';
+import { CategoryService } from '@Services/Category.service';
 import { MyLogger } from '@Services/LoggerService';
 import { response } from '@Utils/response.utils';
 import { serialize } from 'class-transformer';

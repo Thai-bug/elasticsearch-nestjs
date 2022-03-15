@@ -17,7 +17,7 @@ import {
 import { Cache } from 'cache-manager';
 import { MyLogger } from '@Services/LoggerService';
 import { generateAToken } from '@Utils/token.utils';
-import { UserService } from 'src/Services/UserService';
+import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { ILogin } from '@Interfaces/Meta/IUser.meta';
 import {
