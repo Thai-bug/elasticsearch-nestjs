@@ -15,4 +15,8 @@ export class CategoryService extends BaseService<Category, CategoryRepository> {
   async getCategories(options: any): Promise<[Category[], number]> {
     return this.repository.findAndCount(options);
   }
+
+  async getCategory(options: any): Promise<Category> {
+    return  this.repository.findOne(options);
+  }
 }
