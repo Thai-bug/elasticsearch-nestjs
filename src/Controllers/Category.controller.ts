@@ -21,6 +21,7 @@ import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 import { validate } from '@Utils/validate.utils';
 import { ValidateCreateCategory, ValidateUpdateCategory } from '@Meta/Category.validate';
+import axios from 'axios';
 
 @Controller('/api/v1/categories')
 export class CategoryController {
@@ -130,5 +131,13 @@ export class CategoryController {
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
     return response(200, 'success', result);
+  }
+
+  @Post('demo')
+  async demo(@Request() request: Request){
+    const result = await axios.post('https://payment-dev.globalcare.vn', {...request.body});
+    console.log(result);
+
+    response(200, 'success', result);
   }
 }
