@@ -11,7 +11,7 @@ import { UsersModule } from './User.module';
     TypeOrmModule.forFeature([ManufactureRepository]),
     CacheModule.register(),
     AuthModule,
-    UsersModule
+    UsersModule,
   ],
   exports: [TypeOrmModule, ManufactureService, AuthModule],
   providers: [ManufactureService],

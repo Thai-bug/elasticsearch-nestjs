@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Product } from './Product.entity';
 
 @Entity('manufacture')
 export class Manufacture extends BaseEntity {
@@ -10,6 +17,9 @@ export class Manufacture extends BaseEntity {
 
   @Column('text', { nullable: false, name: 'title' })
   title: string;
+
+  @OneToMany((type) => Product, (product) => product.manufacture)
+  products: Product[];
 
   @Column('boolean', { name: 'status', default: true })
   status: boolean;
