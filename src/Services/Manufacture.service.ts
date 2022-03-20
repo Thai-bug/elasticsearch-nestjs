@@ -5,7 +5,10 @@ import { BaseService } from './BaseService';
 import { MyLogger } from './LoggerService';
 
 @Injectable()
-export class ManufactureService extends BaseService<Manufacture, ManufactureRepository> {
+export class ManufactureService extends BaseService<
+  Manufacture,
+  ManufactureRepository
+> {
   private readonly logger = new MyLogger(ManufactureService.name);
   constructor(repository: ManufactureRepository) {
     super(repository);
@@ -16,6 +19,6 @@ export class ManufactureService extends BaseService<Manufacture, ManufactureRepo
   }
 
   async getManufacture(options: any): Promise<Manufacture> {
-    return  this.repository.findOne(options);
+    return this.repository.findOne(options);
   }
 }

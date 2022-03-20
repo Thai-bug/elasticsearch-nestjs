@@ -8,7 +8,6 @@ import {
   CacheModule,
 } from '@nestjs/common';
 
-
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -21,6 +20,8 @@ import { Category } from '@Entities/Category.entity';
 import { PrivateModule } from '@Modules/Private.module';
 import { Manufacture } from '@Entities/Manufacture.entity';
 import { ManufactureModule } from '@Modules/Manufacture.module';
+import { Product } from '@Entities/Product.entity';
+import { ProductModule } from '@Modules/Product.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { ManufactureModule } from '@Modules/Manufacture.module';
 
     ServeStaticModule.forRoot({
       serveRoot: '/cdn/public',
-      rootPath: path.join(__dirname, '..', 'public/static-files')
+      rootPath: path.join(__dirname, '..', 'public/static-files'),
     }),
 
     TypeOrmModule.forRoot({
@@ -39,14 +40,15 @@ import { ManufactureModule } from '@Modules/Manufacture.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Category, Manufacture],
+      entities: [User, Role, Category, Manufacture, Product],
       synchronize: true,
       autoLoadEntities: true,
     }),
     UsersModule,
     CategoryModule,
     PrivateModule,
-    ManufactureModule
+    ManufactureModule,
+    ProductModule,
   ],
 })
 export class AppModule implements NestModule {

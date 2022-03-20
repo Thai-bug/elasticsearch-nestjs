@@ -1,4 +1,7 @@
-import { ValidateCreateManufacture } from '@Meta/Manufacture.validate';
+import {
+  ValidateCreateManufacture,
+  ValidateUpdateManufacture,
+} from '@Meta/Manufacture.validate';
 import {
   CACHE_MANAGER,
   ClassSerializerInterceptor,
@@ -35,7 +38,10 @@ export class ManufactureController {
   @Post('create')
   @UseInterceptors(ClassSerializerInterceptor)
   async createManufacture(@Request() request: Request) {
-    const validateRequest = await validate(ValidateCreateManufacture, request.body);
+    const validateRequest = await validate(
+      ValidateCreateManufacture,
+      request.body,
+    );
 
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
@@ -105,4 +111,34 @@ export class ManufactureController {
     });
   }
 
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('update')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateManufacture(@Request() request: Request) {
+    const validateRequest = await validate(
+      ValidateUpdateManufacture,
+      request.body,
+    );
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const result = await this.manufactureService
+      .update(validateRequest.id, validateRequest)
+      .catch((e) => e);
+
+    switch (+result.code) {
+      case 23505:
+        return response(HttpStatus.BAD_REQUEST, 'Code is existed', null);
+
+      default:
+        break;
+    }
+
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, result.message, null);
+
+    return response(200, 'success', result);
+  }
 }
