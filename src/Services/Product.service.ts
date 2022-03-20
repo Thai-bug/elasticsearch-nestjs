@@ -12,7 +12,7 @@ export class ProductService extends BaseService<Product, ProductRepository> {
   }
 
   async getProducts(options: any): Promise<[Product[], number]> {
-    return this.repository.findAndCount(options);
+    return this.repository.findAndCount({...options});
   }
 
   async getProduct(options: any): Promise<Product> {
