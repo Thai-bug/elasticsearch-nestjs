@@ -26,5 +26,5 @@ jobs:
           cd fake-store-staging
           git checkout staging
           git pull origin staging
-          yarn
-          yarn build
+          npm i
+          npm run build

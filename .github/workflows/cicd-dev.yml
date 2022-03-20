@@ -27,5 +27,5 @@ jobs:
           git checkout develop
           git pull origin develop
           git status
-          yarn
-          yarn build
+          npm i
+          npm run build

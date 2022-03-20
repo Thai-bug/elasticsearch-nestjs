@@ -8,7 +8,7 @@ export class ProductResolver{
   constructor(@Inject(ProductService) private productService: ProductService) {}
 
   @Query((returns) => Product)
-  async customer(@Args('id') id: string): Promise<Product> {
+  async products(@Args('id') id: number): Promise<Product> {
     return await this.productService.findById(id);
   }
 }
