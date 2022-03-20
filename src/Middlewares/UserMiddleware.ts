@@ -6,7 +6,7 @@ import {
   NestMiddleware,
 } from '@nestjs/common';
 import { MyLogger } from '@Services/LoggerService';
-import { UserService } from '@Services/UserService';
+import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { verifyAToken } from '@Utils/token.utils';
 import { Cache } from 'cache-manager';

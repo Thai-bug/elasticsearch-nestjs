@@ -17,7 +17,7 @@ import {
 import { Cache } from 'cache-manager';
 import { MyLogger } from '@Services/LoggerService';
 import { generateAToken } from '@Utils/token.utils';
-import { UserService } from 'src/Services/UserService';
+import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { ILogin } from '@Interfaces/Meta/IUser.meta';
 import {
@@ -113,17 +113,27 @@ export class UserController {
     const user = await this.userService.getUser({ id: req.user.id });
     console.log(user);
 
-    if(!(await UserService.comparePassword(info.oldPassword, user.password))) {
-      return response(HttpStatus.BAD_REQUEST, 'Old password is incorrect', null);
+    if (!(await UserService.comparePassword(info.oldPassword, user.password))) {
+      return response(
+        HttpStatus.BAD_REQUEST,
+        'Old password is incorrect',
+        null,
+      );
     }
 
-    if(await UserService.comparePassword(info.newPassword, user.password)) {
-      return response(HttpStatus.BAD_REQUEST, 'New password is the same as old password', null);
+    if (await UserService.comparePassword(info.newPassword, user.password)) {
+      return response(
+        HttpStatus.BAD_REQUEST,
+        'New password is the same as old password',
+        null,
+      );
     }
 
     info.newPassword = await hash(info.newPassword);
 
-    const update = await this.userService.update(req.user.id, { password:  info.newPassword });
+    const update = await this.userService.update(req.user.id, {
+      password: info.newPassword,
+    });
 
     return response(200, 'success', JSON.parse(serialize(update)));
   }

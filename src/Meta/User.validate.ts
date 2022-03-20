@@ -1,5 +1,5 @@
 import { User } from '@Entities/User.entity';
-import { UserService } from '@Services/UserService';
+import { UserService } from '@Services/User.service';
 import * as Joi from 'joi';
 
 let userService: UserService;
