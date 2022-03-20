@@ -29,3 +29,6 @@ jobs:
           git status
           npm i
           npm run build
+          cp ./.env ./dist
+          cp ./schema.graphql ./dist
+          pm2 restart fake-store
