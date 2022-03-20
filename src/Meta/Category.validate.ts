@@ -1,4 +1,4 @@
-import * as Joi from "joi";
+import * as Joi from 'joi';
 
 export const ValidateCreateCategory = Joi.object({
   title: Joi.string().required().messages({
@@ -10,7 +10,7 @@ export const ValidateCreateCategory = Joi.object({
     'any.required': 'code is required',
   }),
   extraInfo: Joi.object().allow(''),
-})
+});
 
 export const ValidateUpdateCategory = Joi.object({
   id: Joi.number().required().messages({
@@ -28,4 +28,4 @@ export const ValidateUpdateCategory = Joi.object({
     'any.required': 'status is required',
   }),
   extraInfo: Joi.object().allow(''),
-})
+});

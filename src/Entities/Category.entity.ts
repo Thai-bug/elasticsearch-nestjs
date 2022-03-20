@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Product } from '@Entities/Product.entity';
 
 @Entity('category')
 export class Category extends BaseEntity {
@@ -11,10 +18,13 @@ export class Category extends BaseEntity {
   @Column('text', { nullable: false, name: 'title' })
   title: string;
 
+  @OneToMany((type) => Product, (product: Product) => product.category)
+  products: Product[];
+
   @Column('boolean', { name: 'status', default: true })
   status: boolean;
 
-  @Column('jsonb', {name: 'extra_info', default: {}})
+  @Column('jsonb', { name: 'extra_info', default: {} })
   extraInfo: object;
 
   @Column('timestamp', {
