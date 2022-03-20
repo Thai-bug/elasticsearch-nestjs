@@ -22,10 +22,21 @@ import { Manufacture } from '@Entities/Manufacture.entity';
 import { ManufactureModule } from '@Modules/Manufacture.module';
 import { Product } from '@Entities/Product.entity';
 import { ProductModule } from '@Modules/Product.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: 'src/schema.graphql',
+      debug: false,
+      playground: true,
+    }),
+
     CacheModule.register(),
 
     ServeStaticModule.forRoot({

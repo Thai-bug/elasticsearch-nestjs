@@ -3,6 +3,7 @@ import { CacheModule, MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductRepository } from '@Repositories/Product.repository';
 import { ProductService } from '@Services/Product.service';
+import { ProductResolver } from 'src/Resolvers/Product.resolver';
 import { AuthModule } from './Auth.module';
 import { UsersModule } from './User.module';
 
@@ -14,7 +15,7 @@ import { UsersModule } from './User.module';
     UsersModule,
   ],
   exports: [TypeOrmModule, ProductService, AuthModule],
-  providers: [ProductService],
+  providers: [ProductService, ProductResolver],
   controllers: [ProductController],
 })
 export class ProductModule {

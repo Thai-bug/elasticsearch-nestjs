@@ -48,6 +48,12 @@
 			"@Entities": [
 				"src/Entities"
 			],
+			"@Resolvers/*": [
+				"src/Resolvers/*"
+			],
+			"@Resolvers": [
+				"src/Resolvers"
+			],
 			"@Modules/*": [
 				"src/Modules/*"
 			],

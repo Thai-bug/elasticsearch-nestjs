@@ -1,0 +1,70 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Role {
+  id: ID!
+  title: String!
+  code: String!
+  status: Boolean!
+  createdAt: DateTime!
+  users: [User!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  code: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+  status: Boolean!
+  createdAt: DateTime!
+  role: Role!
+}
+
+type Manufacture {
+  id: ID!
+  code: String!
+  title: String!
+  products: [Product!]!
+  status: Boolean!
+  extraInfo: JSONObject!
+  createdAt: DateTime!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type Product {
+  id: ID!
+  code: String!
+  title: String!
+  price: Float!
+  category: Category!
+  manufacture: Manufacture!
+  status: Boolean!
+  extraInfo: JSONObject!
+  createdAt: DateTime!
+}
+
+type Category {
+  id: ID!
+  code: String!
+  title: String!
+  products: [Product!]!
+  status: Boolean!
+  extraInfo: JSONObject!
+  createdAt: DateTime!
+}
+
+type Query {
+  customer(id: String!): Product!
+}
