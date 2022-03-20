@@ -6,8 +6,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CategoryService } from '@Services/CategoryService';
-import { UserService } from '@Services/UserService';
+import { CategoryService } from '@Services/Category.service';
+import { UserService } from '@Services/User.service';
 import { Observable } from 'rxjs';
 
 @Injectable()

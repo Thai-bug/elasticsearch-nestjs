@@ -19,6 +19,8 @@ import { Role } from '@Entities/Role.entity';
 import { CategoryModule } from '@Modules/Category.module';
 import { Category } from '@Entities/Category.entity';
 import { PrivateModule } from '@Modules/Private.module';
+import { Manufacture } from '@Entities/Manufacture.entity';
+import { ManufactureModule } from '@Modules/Manufacture.module';
 
 @Module({
   imports: [
@@ -37,14 +39,14 @@ import { PrivateModule } from '@Modules/Private.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Category],
+      entities: [User, Role, Category, Manufacture],
       synchronize: true,
       autoLoadEntities: true,
     }),
     UsersModule,
     CategoryModule,
-    PrivateModule
-    
+    PrivateModule,
+    ManufactureModule
   ],
 })
 export class AppModule implements NestModule {
