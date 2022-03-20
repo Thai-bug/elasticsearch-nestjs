@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 import { Product } from './Product.entity';
 
-@Entity('category')
-export class Category extends BaseEntity {
+@Entity('manufacture')
+export class Manufacture extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,7 +18,7 @@ export class Category extends BaseEntity {
   @Column('text', { nullable: false, name: 'title' })
   title: string;
 
-  @OneToMany((type) => Product, (product) => product.category)
+  @OneToMany((type) => Product, (product) => product.manufacture)
   products: Product[];
 
   @Column('boolean', { name: 'status', default: true })

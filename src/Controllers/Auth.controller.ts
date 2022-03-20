@@ -10,7 +10,7 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { UserService } from '@Services/UserService';
+import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { generateAToken, verifyAToken } from '@Utils/token.utils';
 import { validate } from '@Utils/validate.utils';

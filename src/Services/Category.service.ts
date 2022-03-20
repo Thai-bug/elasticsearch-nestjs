@@ -17,6 +17,6 @@ export class CategoryService extends BaseService<Category, CategoryRepository> {
   }
 
   async getCategory(options: any): Promise<Category> {
-    return  this.repository.findOne(options);
+    return this.repository.findOne(options);
   }
 }
