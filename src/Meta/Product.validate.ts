@@ -30,3 +30,23 @@ export const ValidateCreateProduct = Joi.object({
       'any.required': 'category is required',
     }),
 });
+
+export const ValidateUpdateProduct = Joi.object({
+  id: Joi.number().required().messages({
+    'any.required': 'id is required',
+  }),
+  title: Joi.string().allow(),
+  code: Joi.string().allow(),
+  status: Joi.boolean().allow(),
+  price: Joi.number().allow(),
+  manufacture: Joi.object({
+    id: Joi.number().required().messages({
+      'any.required': 'manufacture id is required',
+    }),
+  }).allow(),
+  category: Joi.object({
+    id: Joi.number().required().messages({
+      'any.required': 'category id is required',
+    }),
+  }).allow(),
+});

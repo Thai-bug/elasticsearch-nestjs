@@ -20,7 +20,10 @@ import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 import { validate } from '@Utils/validate.utils';
-import { ValidateCreateProduct } from '@Meta/Product.validate';
+import {
+  ValidateCreateProduct,
+  ValidateUpdateProduct,
+} from '@Meta/Product.validate';
 
 @Controller('/api/v1/products')
 export class ProductController {
@@ -76,6 +79,53 @@ export class ProductController {
         break;
     }
 
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, result.message, null);
+
+    return response(200, 'success', result);
+  }
+
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('admin/list')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getCategoriesAdmin(@Request() request: Request) {
+    const limit = +request['query']?.limit || 10;
+    const offset = +request['query']?.offset || 0;
+    const search = request['query']?.search || '';
+    const [result, total] = await this.productService.getProducts({
+      where: {
+        title: ILike(`%${search}%`),
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    return response(200, 'successfully', {
+      data: JSON.parse(serialize(result)),
+      total: total,
+    });
+  }
+
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('update')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateProduct(@Request() request: Request) {
+    const validateRequest = await validate(
+      ValidateUpdateProduct,
+      request['body'],
+    );
+    if (validateRequest instanceof Error)
+      return response(400, 'validation error', validateRequest);
+
+    const result = await this.productService.update(
+      validateRequest.id,
+      validateRequest,
+    );
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 

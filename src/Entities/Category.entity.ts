@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Product } from './Product.entity';
+import { Product } from '@Entities/Product.entity';
 
 @Entity('category')
 export class Category extends BaseEntity {
@@ -18,7 +18,7 @@ export class Category extends BaseEntity {
   @Column('text', { nullable: false, name: 'title' })
   title: string;
 
-  @OneToMany((type) => Product, (product) => product.category)
+  @OneToMany((type) => Product, (product: Product) => product.category)
   products: Product[];
 
   @Column('boolean', { name: 'status', default: true })
