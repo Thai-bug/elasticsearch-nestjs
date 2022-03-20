@@ -66,5 +66,5 @@ type Category {
 }
 
 type Query {
-  customer(id: String!): Product!
+  products(id: Float!): Product!
 }
