@@ -25,6 +25,8 @@ import { ProductModule } from '@Modules/Product.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { Merchant } from '@Entities/Merchant.entity';
+import { MerchantModule } from '@Modules/Merchant.module';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { join } from 'path';
       autoSchemaFile: 'src/schema.graphql',
       debug: false,
       playground: true,
-      path: '/api/v1'
+      path: '/api/graph/v1',
     }),
 
     CacheModule.register(),
@@ -52,7 +54,7 @@ import { join } from 'path';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Category, Manufacture, Product],
+      entities: [User, Role, Category, Manufacture, Product, Merchant],
       synchronize: true,
       autoLoadEntities: true,
     }),
@@ -61,6 +63,7 @@ import { join } from 'path';
     PrivateModule,
     ManufactureModule,
     ProductModule,
+    MerchantModule
   ],
 })
 export class AppModule implements NestModule {
