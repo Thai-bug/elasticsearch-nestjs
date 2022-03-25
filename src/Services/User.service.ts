@@ -1,11 +1,15 @@
 import { IUserService } from '@Interfaces/Services/IUser.service';
 import { Injectable } from '@nestjs/common';
+import {
+  Not
+} from 'typeorm'
 
 import { User } from '@Entities/User.entity';
 import { BaseService } from './BaseService';
 import { UserRepository } from '@Repositories/User.repository';
 import { MyLogger } from './LoggerService';
 import { compare } from '@Utils/bcrypt';
+
 
 @Injectable()
 export class UserService
@@ -35,7 +39,11 @@ export class UserService
   }
 
   async list(option: any): Promise<[User[], number]> {
-    return this.repository.findAndCount(option);
+    return this.repository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.children', 'children')
+      .where({ ...option, role: { id: Not(1) } })
+      .getManyAndCount();
   }
 
   async findByEmail(email: string): Promise<User> {

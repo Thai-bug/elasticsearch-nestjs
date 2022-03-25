@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from './Role.entity';
@@ -54,4 +55,13 @@ export class User extends BaseEntity {
   @ManyToOne((type) => Role, (role) => role.users, { eager: true })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @Field(() => User)
+  @ManyToOne((type) => User, (user) => user.children)
+  @JoinColumn({ name: 'parent' })
+  parent: User;
+
+  @Field(() => [User])
+  @OneToMany((type) => User, (user) => user.parent)
+  children: User[];
 }

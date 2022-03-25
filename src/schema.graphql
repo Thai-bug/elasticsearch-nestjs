@@ -26,6 +26,8 @@ type User {
   status: Boolean!
   createdAt: DateTime!
   role: Role!
+  parent: User!
+  children: [User!]!
 }
 
 type Manufacture {
