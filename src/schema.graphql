@@ -72,4 +72,5 @@ type ProductResponse {
 
 type Query {
   products(id: Float, page: Float = 1, limit: Float = 10): ProductResponse!
+  productsAdmin(id: Float, page: Float = 1, limit: Float = 10): ProductResponse!
 }

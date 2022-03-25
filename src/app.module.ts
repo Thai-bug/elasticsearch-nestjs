@@ -27,6 +27,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { Merchant } from '@Entities/Merchant.entity';
 import { MerchantModule } from '@Modules/Merchant.module';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 @Module({
   imports: [
@@ -38,6 +39,12 @@ import { MerchantModule } from '@Modules/Merchant.module';
       debug: false,
       playground: false,
       path: '/api/graph/v1',
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message:  error?.message,
+        };
+        return graphQLFormattedError;
+      },
     }),
 
     CacheModule.register(),

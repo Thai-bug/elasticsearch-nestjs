@@ -2,6 +2,8 @@ import { AuthController } from '@Controllers/Auth.controller';
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { GqlAuthGuard } from 'src/Auth/Guards/GraphJwtGuard.guard';
+import { GraphRolesGuard } from 'src/Auth/Guards/GraphRole.guard';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { JwtStrategy } from 'src/Auth/Guards/JwtStrategy.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
@@ -21,7 +23,14 @@ import { UsersModule } from './User.module';
       }),
     }),
   ],
-  providers: [AuthService, RolesGuard, JwtAuthGuard, JwtStrategy],
+  providers: [
+    AuthService,
+    RolesGuard,
+    JwtAuthGuard,
+    GqlAuthGuard,
+    GraphRolesGuard,
+    JwtStrategy,
+  ],
   exports: [AuthService],
   controllers: [AuthController],
 })
