@@ -6,6 +6,7 @@ export const ValidateCreateManufacture = Joi.object({
   }),
   title: Joi.string().required().messages({
     'any.required': 'title is required',
+    'string.empty': 'title is required',
   }),
   extraInfo: Joi.object().allow(),
 });
@@ -16,6 +17,7 @@ export const ValidateUpdateManufacture = Joi.object({
   }),
   title: Joi.string().required().messages({
     'any.required': 'title is required',
+    'string.empty': 'title is required',
   }),
   status: Joi.boolean().required().messages({
     'any.required': 'status is required',

@@ -1,5 +1,5 @@
 import { User } from '@Entities/User.entity';
-import { ValidateCreateMerchant } from '@Meta/Merchant.validate';
+import { ValidateCreateMerchant, ValidateUpdateMerchant } from '@Meta/Merchant.validate';
 import {
   CACHE_MANAGER,
   ClassSerializerInterceptor,
@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { MyLogger } from '@Services/LoggerService';
 import { MerchantService } from '@Services/Merchant.service';
+import { getCurrentTime } from '@Utils/moment.utils';
 import { response } from '@Utils/response.utils';
 import { validate } from '@Utils/validate.utils';
 import { Cache } from 'cache-manager';
@@ -52,9 +53,7 @@ export class MerchantController {
   @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
-  async createMerchant(
-    @CurrentUser() user: User,
-    @Request() request: Request) {
+  async createMerchant(@CurrentUser() user: User, @Request() request: Request) {
     const data = request.body;
 
     const validateRequest = await validate(ValidateCreateMerchant, data);
@@ -63,8 +62,8 @@ export class MerchantController {
     }
 
     validateRequest.metaInfo = {
-      creator: JSON.parse(serialize( user))
-    }
+      creator: JSON.parse(serialize(user)),
+    };
 
     const result = await this.merchantService
       .store(validateRequest)
@@ -80,6 +79,54 @@ export class MerchantController {
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
-    return response(HttpStatus.OK, 'successfully', JSON.parse(serialize(result)));
+    return response(
+      HttpStatus.OK,
+      'successfully',
+      JSON.parse(serialize(result)),
+    );
+  }
+
+  @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('update')
+  async updateMerchant(@CurrentUser() user: User, @Request() request: Request) {
+    const data = request.body;
+
+    const validateRequest = await validate(ValidateUpdateMerchant, data);
+    if (validateRequest instanceof Error) {
+      return response(400, 'validation error', validateRequest.message);
+    }
+
+    const merchant = await this.merchantService.findById(validateRequest.id);
+    if (!merchant) {
+      return response(HttpStatus.NOT_FOUND, 'merchant not found', null);
+    }
+
+    const updatedContent = JSON.parse(serialize(validateRequest));
+
+    validateRequest.metaInfo = merchant.metaInfo;
+
+    if (!validateRequest.metaInfo?.editors) {
+      merchant.metaInfo.editors = [];
+    }
+
+    validateRequest.metaInfo.editors.unshift({
+      editor: JSON.parse(serialize(user)),
+      editedContent: updatedContent,
+      editedAt: getCurrentTime(),
+    });
+
+    const result = await this.merchantService
+      .update(validateRequest.id, validateRequest)
+      .catch((err) => err);
+
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, result.message, null);
+
+    return response(
+      HttpStatus.OK,
+      'successfully',
+      result,
+    );
   }
 }

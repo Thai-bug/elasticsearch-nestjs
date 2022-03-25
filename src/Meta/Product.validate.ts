@@ -3,9 +3,11 @@ export const ValidateCreateProduct = Joi.object({
   title: Joi.string().required().messages({
     'string.base': 'title must be a string',
     'any.required': 'title is required',
+    'string.empty': 'title is required',
   }),
   code: Joi.string().required().messages({
     'any.required': 'code is required',
+    'string.empty': 'code is required',
   }),
   price: Joi.number().required().messages({
     'number.base': 'price must be a number',
