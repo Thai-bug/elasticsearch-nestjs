@@ -36,7 +36,7 @@ import { MerchantModule } from '@Modules/Merchant.module';
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.graphql',
       debug: false,
-      playground: true,
+      playground: false,
       path: '/api/graph/v1',
     }),
 
