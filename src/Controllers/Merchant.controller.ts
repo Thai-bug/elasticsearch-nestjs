@@ -1,3 +1,4 @@
+import { User } from '@Entities/User.entity';
 import { ValidateCreateMerchant } from '@Meta/Merchant.validate';
 import {
   CACHE_MANAGER,
@@ -18,6 +19,7 @@ import { validate } from '@Utils/validate.utils';
 import { Cache } from 'cache-manager';
 import { serialize } from 'class-transformer';
 import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
+import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 import { ILike } from 'typeorm';
@@ -50,12 +52,18 @@ export class MerchantController {
   @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
-  async createMerchant(@Request() request: Request) {
+  async createMerchant(
+    @CurrentUser() user: User,
+    @Request() request: Request) {
     const data = request.body;
 
     const validateRequest = await validate(ValidateCreateMerchant, data);
     if (validateRequest instanceof Error) {
       return response(400, 'validation error', validateRequest.message);
+    }
+
+    validateRequest.metaInfo = {
+      creator: JSON.parse(serialize( user))
     }
 
     const result = await this.merchantService
@@ -72,6 +80,6 @@ export class MerchantController {
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
-    return response(HttpStatus.OK, 'successfully', result);
+    return response(HttpStatus.OK, 'successfully', JSON.parse(serialize(result)));
   }
 }

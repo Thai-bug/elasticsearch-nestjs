@@ -1,3 +1,4 @@
+import { User } from '@Entities/User.entity';
 import {
   ValidateCreateManufacture,
   ValidateUpdateManufacture,
@@ -21,9 +22,11 @@ import { validate } from '@Utils/validate.utils';
 import { Cache } from 'cache-manager';
 import { serialize } from 'class-transformer';
 import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
+import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
 import { ILike } from 'typeorm';
+import { getCurrentTime } from '@Utils/moment.utils';
 
 @Controller('/api/v1/manufactures')
 export class ManufactureController {
@@ -37,7 +40,10 @@ export class ManufactureController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
   @UseInterceptors(ClassSerializerInterceptor)
-  async createManufacture(@Request() request: Request) {
+  async createManufacture(
+    @CurrentUser() user: User,
+    @Request() request: Request,
+  ) {
     const validateRequest = await validate(
       ValidateCreateManufacture,
       request.body,
@@ -45,6 +51,10 @@ export class ManufactureController {
 
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    validateRequest.metaInfo = {
+      creator: JSON.parse(serialize(user)),
+    };
 
     const result = await this.manufactureService
       .store(validateRequest)
@@ -115,7 +125,10 @@ export class ManufactureController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('update')
   @UseInterceptors(ClassSerializerInterceptor)
-  async updateManufacture(@Request() request: Request) {
+  async updateManufacture(
+    @CurrentUser() user: User,
+    @Request() request: Request,
+  ) {
     const validateRequest = await validate(
       ValidateUpdateManufacture,
       request.body,
@@ -123,6 +136,25 @@ export class ManufactureController {
 
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const manufacture = await this.manufactureService.findById(
+      validateRequest.id as number,
+    );
+
+    if (!manufacture) {
+      return response(HttpStatus.BAD_REQUEST, 'manufacture not found', null);
+    }
+
+    validateRequest.metaInfo = manufacture.metaInfo;
+
+    if (!validateRequest.metaInfo?.editors) {
+      manufacture.metaInfo.editors = [];
+    }
+
+    validateRequest.metaInfo.editors.unshift({
+      user: JSON.parse(serialize(user)),
+      editedAt: getCurrentTime(),
+    });
 
     const result = await this.manufactureService
       .update(validateRequest.id, validateRequest)

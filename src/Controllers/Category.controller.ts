@@ -25,6 +25,8 @@ import {
   ValidateUpdateCategory,
 } from '@Meta/Category.validate';
 import axios from 'axios';
+import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
+import { User } from '@Entities/User.entity';
 
 @Controller('/api/v1/categories')
 export class CategoryController {
@@ -86,7 +88,9 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('create')
-  async createCategory(@Request() request: Request) {
+  async createCategory(
+    @CurrentUser() user: User,
+    @Request() request: Request) {
     const validateRequest = await validate(
       ValidateCreateCategory,
       request['body'],
@@ -94,6 +98,9 @@ export class CategoryController {
 
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+      validateRequest.extraInfo = {};
+      validateRequest.metaInfo.creator = user;
 
     const result = await this.categoryService
       .store(request['body'])

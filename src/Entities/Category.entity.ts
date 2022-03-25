@@ -9,6 +9,8 @@ import { Product } from '@Entities/Product.entity';
 
 import { ObjectType, Field, ID,  } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
+import { IKeyAble } from '@Interfaces/Meta/Base.meta';
+import { Exclude } from 'class-transformer';
 
 @Entity('category')
 @ObjectType()
@@ -35,7 +37,12 @@ export class Category extends BaseEntity {
 
   @Field(() => GraphQLJSONObject)
   @Column('jsonb', { name: 'extra_info', default: {} })
-  extraInfo: object;
+  extraInfo: IKeyAble;
+
+  @Field(()=> GraphQLJSONObject)
+  @Column('jsonb', { name: 'meta_info', default: {} })
+  @Exclude()
+  metaInfo: IKeyAble;
 
   @Field()
   @Column('timestamp', {

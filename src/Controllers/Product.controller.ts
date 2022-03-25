@@ -24,6 +24,9 @@ import {
   ValidateCreateProduct,
   ValidateUpdateProduct,
 } from '@Meta/Product.validate';
+import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
+import { User } from '@Entities/User.entity';
+import { getCurrentTime } from '@Utils/moment.utils';
 
 @Controller('/api/v1/products')
 export class ProductController {
@@ -60,12 +63,16 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
   @UseInterceptors(ClassSerializerInterceptor)
-  async createCategory(@Request() request: Request) {
+  async createCategory(@CurrentUser() user: User, @Request() request: Request) {
     const body = request['body'];
     const validateRequest = await validate(ValidateCreateProduct, body);
     if (validateRequest instanceof Error) {
       return response(400, 'validation error', validateRequest);
     }
+
+    validateRequest.metaInfo = {
+      creator: JSON.parse(serialize(user)),
+    };
 
     const result = await this.productService
       .store(validateRequest)
@@ -82,7 +89,7 @@ export class ProductController {
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
-    return response(200, 'success', result);
+    return response(200, 'success', JSON.parse(serialize(result)));
   }
 
   @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
@@ -114,7 +121,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('update')
   @UseInterceptors(ClassSerializerInterceptor)
-  async updateProduct(@Request() request: Request) {
+  async updateProduct(@CurrentUser() user: User, @Request() request: Request) {
     const validateRequest = await validate(
       ValidateUpdateProduct,
       request['body'],
@@ -122,10 +129,23 @@ export class ProductController {
     if (validateRequest instanceof Error)
       return response(400, 'validation error', validateRequest);
 
-    const result = await this.productService.update(
-      validateRequest.id,
-      validateRequest,
-    );
+    const product = await this.productService.findById(validateRequest.id);
+    if (!product)
+      return response(HttpStatus.BAD_REQUEST, 'product not found', null);
+
+    validateRequest.metaInfo = product.metaInfo;
+    if (!validateRequest.metaInfo.editors) {
+      validateRequest.metaInfo.editors = [];
+    }
+
+    validateRequest.metaInfo.editors.unshift({
+      user: JSON.parse(serialize(user)),
+      editedAt: getCurrentTime(),
+    });
+
+    const result = await this.productService
+      .update(validateRequest.id, validateRequest)
+      .catch((e) => e);
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 

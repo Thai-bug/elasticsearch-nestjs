@@ -29,14 +29,20 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     return new Promise((resolve, reject) => {
-      
       this.userService.findById(request.user.id).then((user) => {
         if (!user.status) return resolve(false);
 
-        if (roles.indexOf('ANY') || roles.length === 0) return resolve(true);
+        if (roles.indexOf('ANY') || roles.length === 0) {
+          request.user = user;
+          return resolve(true);
+        }
 
         const hasRole = () => roles.indexOf(user.role.code) > -1;
-        resolve(hasRole());
+        if (hasRole()) {
+          request.user = user;
+          return resolve(true);
+        }
+        resolve(false);
       });
     });
   }
