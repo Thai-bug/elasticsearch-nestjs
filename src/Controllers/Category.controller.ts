@@ -143,4 +143,12 @@ export class CategoryController {
 
     return response(200, 'success', result);
   }
+
+  @Post('demo')
+  async demo(@Request() request: Request){
+    const result = await axios.post('http://payment-dev.globalcare.vn', {...request.body}).then(e=>e);
+    console.log(result);
+
+    response(200, 'success', result);
+  }
 }
