@@ -43,6 +43,7 @@ export class MerchantController {
       title: ILike(`%${search}%`),
       skip: offset,
       take: limit,
+      status: true
     });
     return response(HttpStatus.OK, 'successfully', {
       total,
@@ -128,5 +129,23 @@ export class MerchantController {
       'successfully',
       result,
     );
+  }
+
+  @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('admin/list')
+  async getMerchantsForAdmin(@Request() request: Request) {
+    const limit = +request['query']?.limit || 10;
+    const offset = +request['query']?.offset || 0;
+    const search = request['query']?.search || '';
+    const [result, total] = await this.merchantService.getMerchants({
+      title: ILike(`%${search}%`),
+      skip: offset,
+      take: limit,
+    });
+    return response(HttpStatus.OK, 'successfully', {
+      total,
+      data: result,
+    });
   }
 }
