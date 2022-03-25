@@ -27,6 +27,7 @@ import {
 import axios from 'axios';
 import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
 import { User } from '@Entities/User.entity';
+import { getCurrentTime } from '@Utils/moment.utils';
 
 @Controller('/api/v1/categories')
 export class CategoryController {
@@ -124,7 +125,9 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('update')
-  async updateCategory(@Request() request: Request) {
+  async updateCategory(
+    @CurrentUser() user: User,
+    @Request() request: Request) {
     const validateRequest = await validate(
       ValidateUpdateCategory,
       request['body'],
@@ -132,6 +135,23 @@ export class CategoryController {
 
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    const category = await this.categoryService.findById(validateRequest.id);
+    if (!category)
+      return response(HttpStatus.BAD_REQUEST, 'category is not existed', null);
+
+      const updatedContent = JSON.parse(serialize(validateRequest));
+
+    validateRequest.metaInfo = category.metaInfo;
+    if(!validateRequest.metaInfo.editors){
+      validateRequest.metaInfo.editors = [];
+    } 
+
+    validateRequest.metaInfo.editors.unshift({
+      editor: JSON.parse(serialize(user)),
+      editedContent: updatedContent,
+      editedAt: getCurrentTime()
+    });
 
     const result = await this.categoryService
       .update(validateRequest.id, validateRequest)
@@ -151,11 +171,4 @@ export class CategoryController {
     return response(200, 'success', result);
   }
 
-  @Post('demo')
-  async demo(@Request() request: Request){
-    const result = await axios.post('http://payment-dev.globalcare.vn', {...request.body}).then(e=>e);
-    console.log(result);
-
-    response(200, 'success', result);
-  }
 }

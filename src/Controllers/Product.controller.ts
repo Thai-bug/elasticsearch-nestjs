@@ -133,13 +133,16 @@ export class ProductController {
     if (!product)
       return response(HttpStatus.BAD_REQUEST, 'product not found', null);
 
+    const updatedContent = JSON.parse(serialize(validateRequest));
+
     validateRequest.metaInfo = product.metaInfo;
     if (!validateRequest.metaInfo.editors) {
       validateRequest.metaInfo.editors = [];
     }
 
     validateRequest.metaInfo.editors.unshift({
-      user: JSON.parse(serialize(user)),
+      editor: JSON.parse(serialize(user)),
+      editedContent: updatedContent,
       editedAt: getCurrentTime(),
     });
 

@@ -145,6 +145,8 @@ export class ManufactureController {
       return response(HttpStatus.BAD_REQUEST, 'manufacture not found', null);
     }
 
+    const updatedContent = JSON.parse(serialize(validateRequest));
+
     validateRequest.metaInfo = manufacture.metaInfo;
 
     if (!validateRequest.metaInfo?.editors) {
@@ -152,7 +154,8 @@ export class ManufactureController {
     }
 
     validateRequest.metaInfo.editors.unshift({
-      user: JSON.parse(serialize(user)),
+      editor: JSON.parse(serialize(user)),
+      editedContent: updatedContent,
       editedAt: getCurrentTime(),
     });
 
