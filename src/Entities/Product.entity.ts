@@ -19,15 +19,15 @@ export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Field({nullable: true})
   @Column('text', { unique: true, default: '', name: 'code' })
   code: string;
 
-  @Field()
+  @Field(({nullable: true}))
   @Column('text', { nullable: false, name: 'title' })
   title: string;
 
-  @Field()
+  @Field({nullable: true})
   @Column('int', { name: 'description' })
   price: number;
 
@@ -45,15 +45,15 @@ export class Product extends BaseEntity {
   @JoinColumn({ name: 'manufacture_id' })
   manufacture: Manufacture;
 
-  @Field()
+  @Field({nullable: true})
   @Column('boolean', { name: 'status', default: true })
   status: boolean;
 
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSONObject, {nullable: true})
   @Column('jsonb', { name: 'extra_info', default: {} })
   extraInfo: object;
 
-  @Field()
+  @Field({nullable: true})
   @Column('timestamp', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',

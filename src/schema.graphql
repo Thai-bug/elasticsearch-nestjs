@@ -45,14 +45,14 @@ scalar JSONObject
 
 type Product {
   id: ID!
-  code: String!
-  title: String!
-  price: Float!
+  code: String
+  title: String
+  price: Float
   category: Category!
   manufacture: Manufacture!
-  status: Boolean!
-  extraInfo: JSONObject!
-  createdAt: DateTime!
+  status: Boolean
+  extraInfo: JSONObject
+  createdAt: DateTime
 }
 
 type Category {
@@ -65,6 +65,11 @@ type Category {
   createdAt: DateTime!
 }
 
+type ProductResponse {
+  data: [Product!]!
+  total: Int!
+}
+
 type Query {
-  products(id: Float!): Product!
+  products(id: Float, page: Float = 1, limit: Float = 10): ProductResponse!
 }

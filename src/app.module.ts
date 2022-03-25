@@ -35,6 +35,7 @@ import { join } from 'path';
       autoSchemaFile: 'src/schema.graphql',
       debug: false,
       playground: true,
+      path: '/api/v1'
     }),
 
     CacheModule.register(),
