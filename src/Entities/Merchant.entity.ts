@@ -3,6 +3,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MerchantUser } from './MerchantUser.entity';
 import { User } from './User.entity';
 
 @ObjectType()
@@ -33,9 +34,9 @@ export class Merchant extends BaseEntity {
   @Exclude()
   metaInfo: IKeyAble;
 
-  @Field((type) => [User])
-  @OneToMany(() => User, (user) => user.merchant)
-  merchantUsers: User[];
+  @Field((type) => [MerchantUser])
+  @OneToMany(() => MerchantUser, (user) => user.merchant)
+  merchantUsers: MerchantUser[];
 
   @Field()
   @Column('timestamp', {
