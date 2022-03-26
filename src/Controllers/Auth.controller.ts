@@ -7,9 +7,11 @@ import {
   Get,
   HttpStatus,
   Inject,
+  Param,
   Post,
-  Req,
+  Request,
 } from '@nestjs/common';
+import { MerchantUserService } from '@Services/MerchantUser.service';
 import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { generateAToken, verifyAToken } from '@Utils/token.utils';
@@ -17,7 +19,8 @@ import { validate } from '@Utils/validate.utils';
 
 @Controller('api/v1/auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+    private readonly merchantUserService: MerchantUserService) {}
 
   @Post('login')
   async login(@Body() info: ILogin) {
@@ -38,7 +41,7 @@ export class AuthController {
   }
 
   @Get('refresh-token')
-  async refreshToken(@Req() req: any) {
+  async refreshToken(@Request() req: any) {
     const token = req.headers.refresh;
 
     const decode = verifyAToken(token, 'refresh');
@@ -55,5 +58,18 @@ export class AuthController {
     return response(200, 'refresh token successfully', {
       refreshToken: generateAToken(user, 'refresh'),
     });
+  }
+
+  @Post('merchant/:merchantCode/login')
+  async loginMerchant(
+    @Param('merchantCode') merchantCode: Request,
+    @Request() request: Request,
+    @Body() info: ILogin) {
+      const username = request.body['username'];
+      const password = request.body['password'];
+
+      console.log(await this.merchantUserService.login({
+        username: username,
+      }))
   }
 }
