@@ -19,8 +19,7 @@ import { validate } from '@Utils/validate.utils';
 
 @Controller('api/v1/auth')
 export class AuthController {
-  constructor(private readonly userService: UserService,
-    private readonly merchantUserService: MerchantUserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post('login')
   async login(@Body() info: ILogin) {
@@ -64,12 +63,15 @@ export class AuthController {
   async loginMerchant(
     @Param('merchantCode') merchantCode: Request,
     @Request() request: Request,
-    @Body() info: ILogin) {
-      const username = request.body['username'];
-      const password = request.body['password'];
+    @Body() info: ILogin,
+  ) {
+    const username = request.body['username'];
+    const password = request.body['password'];
 
-      console.log(await this.merchantUserService.login({
-        username: username,
-      }))
+    // console.log(
+    //   await this.merchantUserService.login({
+    //     username: username,
+    //   }),
+    // );
   }
 }
