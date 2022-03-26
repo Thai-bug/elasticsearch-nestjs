@@ -38,11 +38,18 @@ export class UserService
     return user;
   }
 
-  async list(option: any): Promise<[User[], number]> {
+  async list(option: any, offset: number, limit: number): Promise<[User[], number]> {
     return this.repository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.children', 'children')
-      .where({ ...option, role: { id: Not(1) } })
+      .leftJoinAndSelect('user.parent', 'parent')
+      .where('user.email like :email', { email: `%${option.search}%` })
+      .orWhere('user.firstName like :firstName', { firstName: `%${option.search}%` })
+      .orWhere('user.lastName like :lastName', { lastName: `%${option.search}%` })
+      .andWhere({role: { id: Not(1) } })
+      .take(limit)
+      .skip(offset)
+      .orderBy('user.createdAt', 'DESC')
       .getManyAndCount();
   }
 

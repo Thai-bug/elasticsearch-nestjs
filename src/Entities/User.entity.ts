@@ -11,6 +11,7 @@ import {
 import { Role } from './Role.entity';
 
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Merchant } from './Merchant.entity';
 
 @ObjectType()
 @Entity('user')
@@ -64,4 +65,9 @@ export class User extends BaseEntity {
   @Field(() => [User])
   @OneToMany((type) => User, (user) => user.parent)
   children: User[];
+
+  @Field(() => Merchant)
+  @ManyToOne((type) => Merchant, (merchant) => merchant.merchantUsers)
+  @JoinColumn({ name: 'merchant_id' })
+  merchant: Merchant;
 }

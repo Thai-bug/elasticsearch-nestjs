@@ -58,8 +58,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('list')
   @UseInterceptors(ClassSerializerInterceptor)
-  async list() {
-    const data = await this.userService.list({});
+  async list(@Request() request: Request) {
+    const limit = +request['query'].limit || 10;
+    const offset = +request['query'].page || 0;
+    const search = request['query'].search || '';
+
+    const data = await this.userService.list({ search }, offset, limit );
 
     return response(200, 'success', {
       data: JSON.parse(serialize(data[0])),

@@ -2,7 +2,8 @@ import { IKeyAble } from '@Interfaces/Meta/Base.meta';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from './User.entity';
 
 @ObjectType()
 @Entity('merchant')
@@ -31,6 +32,10 @@ export class Merchant extends BaseEntity {
   @Column('json', { name: 'meta_info', default: {} })
   @Exclude()
   metaInfo: IKeyAble;
+
+  @Field((type) => [User])
+  @OneToMany(() => User, (user) => user.merchant)
+  merchantUsers: User[];
 
   @Field()
   @Column('timestamp', {

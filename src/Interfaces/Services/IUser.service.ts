@@ -5,7 +5,7 @@ export interface IUserService {
 
   login(options: any): Promise<User | null>;
 
-  list(option): Promise<[User[], number]>;
+  list(option: any, offset: number, limit: number): Promise<[User[], number]>;
 
   findByEmail(email: string): Promise<User>;
 }
