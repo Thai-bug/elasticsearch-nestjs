@@ -126,6 +126,7 @@ export class UserController {
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
 
     const user = await this.userService.getUser({ id: req.user.id });
+    
 
     if (!(await UserService.comparePassword(info.oldPassword, user.password))) {
       return response(
