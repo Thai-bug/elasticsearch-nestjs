@@ -15,21 +15,10 @@ export const ValidateLogin = Joi.object({
 });
 
 export const ValidateRegister = Joi.object({
-  email: Joi.string()
-    .email()
-    .required()
-    .external(async (value, helpers) => {
-      const data = await User.findOne({ email: value });
-      if (data) {
-        throw new Error('email already exists');
-      }
-
-      return value;
-    })
-    .messages({
-      'string.email': 'email is not valid',
-      'any.required': 'email is required',
-    }),
+  email: Joi.string().email().required().messages({
+    'string.email': 'email is not valid',
+    'any.required': 'email is required',
+  }),
   password: Joi.string().min(8).required().messages({
     'string.min': 'password is not valid',
     'any.required': 'password is required',
@@ -49,6 +38,7 @@ export const ValidateRegister = Joi.object({
     .messages({
       'any.required': 'role is required',
     }),
+  merchant: Joi.allow(),
 });
 
 export const ValidateProfile = Joi.object({

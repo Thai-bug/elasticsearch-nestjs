@@ -57,20 +57,4 @@ export class AuthController {
       refreshToken: generateAToken(user, 'refresh'),
     });
   }
-
-  @Post('merchant/:merchantCode/login')
-  async loginMerchant(
-    @Param('merchantCode') merchantCode: Request,
-    @Request() request: Request,
-    @Body() info: ILogin,
-  ) {
-    const username = request.body['username'];
-    const password = request.body['password'];
-
-    // console.log(
-    //   await this.merchantUserService.login({
-    //     username: username,
-    //   }),
-    // );
-  }
 }

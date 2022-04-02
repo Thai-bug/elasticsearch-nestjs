@@ -1,6 +1,11 @@
 import { User } from '@Entities/User.entity';
-import { ValidateCreateMerchant, ValidateUpdateMerchant } from '@Meta/Merchant.validate';
 import {
+  CreateMerchantUserValidate,
+  ValidateCreateMerchant,
+  ValidateUpdateMerchant,
+} from '@Meta/Merchant.validate';
+import {
+  Body,
   CACHE_MANAGER,
   ClassSerializerInterceptor,
   Controller,
@@ -14,6 +19,9 @@ import {
 } from '@nestjs/common';
 import { MyLogger } from '@Services/LoggerService';
 import { MerchantService } from '@Services/Merchant.service';
+import { UserService } from '@Services/User.service';
+import { hash } from '@Utils/bcrypt';
+import { randomString } from '@Utils/crypto';
 import { getCurrentTime } from '@Utils/moment.utils';
 import { response } from '@Utils/response.utils';
 import { validate } from '@Utils/validate.utils';
@@ -23,7 +31,7 @@ import { hasRoles } from 'src/Auth/Decorators/Role.decorators';
 import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
 import { JwtAuthGuard } from 'src/Auth/Guards/JwtGuard.guard';
 import { RolesGuard } from 'src/Auth/Guards/Role.guard';
-import { ILike } from 'typeorm';
+import { getManager, ILike } from 'typeorm';
 
 @Controller('/api/v1/merchants')
 export class MerchantController {
@@ -31,6 +39,7 @@ export class MerchantController {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly merchantService: MerchantService,
+    private readonly userService: UserService,
   ) {}
 
   @Get('')
@@ -43,7 +52,7 @@ export class MerchantController {
       title: ILike(`%${search}%`),
       skip: offset,
       take: limit,
-      status: true
+      status: true,
     });
     return response(HttpStatus.OK, 'successfully', {
       total,
@@ -124,14 +133,10 @@ export class MerchantController {
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
-    return response(
-      HttpStatus.OK,
-      'successfully',
-      result,
-    );
+    return response(HttpStatus.OK, 'successfully', result);
   }
 
-  @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
+  @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER, MERCHANT_ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('admin/list')
   async getMerchantsForAdmin(@Request() request: Request) {
@@ -146,6 +151,56 @@ export class MerchantController {
     return response(HttpStatus.OK, 'successfully', {
       total,
       data: result,
+    });
+  }
+
+  @hasRoles('MERCHANT_ADMIN', 'MERCHANT_MANAGER', 'ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/create-user')
+  async addUserToMerchant(
+    @CurrentUser() currentUser: User,
+    @Body() user: User,
+  ) {
+    const validateRequest = await validate(CreateMerchantUserValidate, user);
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    user.code = `${currentUser.merchant?.code}_${randomString().toUpperCase()}`;
+    user.password = await hash(user.password);
+    user.parent = currentUser;
+    user.merchant = currentUser.merchant;
+
+    let result = await this.userService.store(user);
+
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, 'failed', null);
+
+    return response(200, 'success', result);
+  }
+
+  @hasRoles('MERCHANT_ADMIN', 'MERCHANT_USER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/users/list')
+  async listUsers(
+    @CurrentUser() currentUser: User,
+    @Request() request: Request,
+  ) {
+    const limit = +request['query'].limit || 10;
+    const offset = +request['query'].page || 0;
+    const search = request['query'].search || '';
+
+    const data = await this.userService.list(
+      currentUser,
+      { search },
+      offset,
+      limit,
+    );
+
+    return response(200, 'success', {
+      data
+      // data: JSON.parse(serialize(data[0])),
+      // total: data[1],
     });
   }
 }

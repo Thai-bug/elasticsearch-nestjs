@@ -40,7 +40,7 @@ export class User extends BaseEntity {
   lastName: string;
 
   @Field()
-  @Column('text', { name: 'email' })
+  @Column('text', { name: 'email', unique: true })
   email: string;
 
   @Field()
@@ -64,11 +64,16 @@ export class User extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
+  @ManyToOne(type=>Merchant, {eager: true})
+  @JoinColumn({name: 'merchant_id'})
+  merchant: Merchant
+
   @TreeChildren()
   children: User[];
 
   @TreeParent({
     onDelete: 'SET NULL'
   })
+  @JoinColumn({name: 'parent_id'})
   parent: User;
 }

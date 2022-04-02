@@ -56,7 +56,7 @@ export class UserController {
     return response(200, 'success', await this.cacheManager.get(authorization));
   }
 
-  @hasRoles('ADMIN', 'MANAGER', 'MANAGER_USER')
+  @hasRoles('ADMIN', 'MANAGER', 'MANAGER_USER', 'MERCHANT_ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('list')
   @UseInterceptors(ClassSerializerInterceptor)
