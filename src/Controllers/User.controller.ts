@@ -60,16 +60,21 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('list')
   @UseInterceptors(ClassSerializerInterceptor)
-  async list(@Request() request: Request) {
+  async list(@CurrentUser() currentUser: User, @Request() request: Request) {
     const limit = +request['query'].limit || 10;
     const offset = +request['query'].page || 0;
     const search = request['query'].search || '';
 
-    const data = await this.userService.list({ search }, offset, limit);
+    const data: [User[], number] = await this.userService.list(
+      currentUser,
+      { search },
+      offset,
+      limit,
+    );
 
     return response(200, 'success', {
-      data
-      // total: data[1],
+      data: JSON.parse(serialize(data[0])),
+      total: data[1],
     });
   }
 
@@ -87,11 +92,8 @@ export class UserController {
     info.parent = currentUser;
     // let result = await getManager().getTreeRepository(User).save(info);
     let result = await this.userService.store(info);
-    
-    const updateClosure = await this.userService.updateClosure(
-      result,
-      currentUser,
-    );
+
+    await this.userService.updateClosure(result, currentUser);
 
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, 'failed', null);

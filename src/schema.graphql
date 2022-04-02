@@ -73,10 +73,6 @@ type ProductResponse {
   total: Int!
 }
 
-type MerchantUser {
-  id: ID!
-}
-
 type Query {
   products(id: Float, page: Float = 1, limit: Float = 10): ProductResponse!
   productsAdmin(id: Float, page: Float = 1, limit: Float = 10): ProductResponse!

@@ -28,7 +28,6 @@ import { join } from 'path';
 import { Merchant } from '@Entities/Merchant.entity';
 import { MerchantModule } from '@Modules/Merchant.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
-import { MerchantUser } from '@Entities/MerchantUser.entity';
 
 @Module({
   imports: [
@@ -62,7 +61,7 @@ import { MerchantUser } from '@Entities/MerchantUser.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Category, Manufacture, Product, Merchant, MerchantUser],
+      entities: [User, Role, Category, Manufacture, Product, Merchant],
       synchronize: true,
       autoLoadEntities: true,
     }),

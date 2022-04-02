@@ -11,7 +11,6 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
-import { MerchantUserService } from '@Services/MerchantUser.service';
 import { UserService } from '@Services/User.service';
 import { response } from '@Utils/response.utils';
 import { generateAToken, verifyAToken } from '@Utils/token.utils';

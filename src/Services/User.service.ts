@@ -34,27 +34,46 @@ export class UserService extends BaseTreeService<User, UserRepository> {
     return user;
   }
 
-  async list(option: any, offset: number, limit: number): Promise<User> {
-    const demo = await this.repository.findTrees();
+  async list(currentUser: User, option: any, offset: number, limit: number): Promise<
+  [User[], number]> {
+    const demo = await this.repository
+      .findOne({
+        where: {
+          id: currentUser.id
+        }
+      });
 
-    return await this.repository.findDescendantsTree(demo[0]);
+    return await this.repository
+      .createDescendantsQueryBuilder('user', 'user_closure', demo)
+      .where('user.email like :email', { email: `%${option.search}%` })
+      .orWhere('user.firstName like :firstName', {
+        firstName: `%${option.search}%`,
+      })
+      .orWhere('user.lastName like :lastName', {
+        lastName: `%${option.search}%`,
+      })
+      .andWhere({ role: { id: Not(1) } })
+      .take(limit)
+      .skip(offset)
+      .orderBy('user.createdAt', 'DESC')
+      .getManyAndCount();
 
     // return this.repository
     //   .createQueryBuilder('user')
     //   .leftJoinAndSelect('user.children', 'children')
     //   .leftJoinAndSelect('user.parent', 'parent')
-    //   .where('user.email like :email', { email: `%${option.search}%` })
-    //   .orWhere('user.firstName like :firstName', {
-    //     firstName: `%${option.search}%`,
-    //   })
-    //   .orWhere('user.lastName like :lastName', {
-    //     lastName: `%${option.search}%`,
-    //   })
-    //   .andWhere({ role: { id: Not(1) } })
-    //   .take(limit)
-    //   .skip(offset)
-    //   .orderBy('user.createdAt', 'DESC')
-    //   .getManyAndCount();
+    // .where('user.email like :email', { email: `%${option.search}%` })
+    // .orWhere('user.firstName like :firstName', {
+    //   firstName: `%${option.search}%`,
+    // })
+    // .orWhere('user.lastName like :lastName', {
+    //   lastName: `%${option.search}%`,
+    // })
+    // .andWhere({ role: { id: Not(1) } })
+    // .take(limit)
+    // .skip(offset)
+    // .orderBy('user.createdAt', 'DESC')
+    // .getManyAndCount();
   }
 
   async findByEmail(email: string): Promise<User> {
