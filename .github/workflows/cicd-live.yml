@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: executing remote ssh commands using ssh key 
-    
+
       uses: appleboy/ssh-action@master 
       with: 
         host: ${{ secrets.HOST }} 
@@ -24,7 +24,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }} 
         port: 22
         script: |
-          cd fake-store
+          cd web/fake-store
           git checkout production
           git pull origin production
           git status
