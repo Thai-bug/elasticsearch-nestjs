@@ -37,6 +37,8 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import { genRandomUUId } from '@Utils/uuid';
 import { hash } from '@Utils/bcrypt';
+import { CurrentUser } from 'src/Auth/Decorators/User.decorator';
+import { getManager } from 'typeorm';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -63,18 +65,18 @@ export class UserController {
     const offset = +request['query'].page || 0;
     const search = request['query'].search || '';
 
-    const data = await this.userService.list({ search }, offset, limit );
+    const data = await this.userService.list({ search }, offset, limit);
 
     return response(200, 'success', {
-      data: JSON.parse(serialize(data[0])),
-      total: data[1],
+      data
+      // total: data[1],
     });
   }
 
   @hasRoles('ADMIN', 'MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
-  async register(@Body() info: User) {
+  async register(@CurrentUser() currentUser: User, @Body() info: User) {
     const validateInfo = await validate(ValidateRegister, info);
 
     if (validateInfo instanceof Error)
@@ -82,7 +84,14 @@ export class UserController {
 
     info.code = randomString().toUpperCase();
     info.password = await hash(info.password);
-    const result = await this.userService.store(info);
+    info.parent = currentUser;
+    // let result = await getManager().getTreeRepository(User).save(info);
+    let result = await this.userService.store(info);
+    
+    const updateClosure = await this.userService.updateClosure(
+      result,
+      currentUser,
+    );
 
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, 'failed', null);

@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import {
   BaseEntity,
   Column,
@@ -7,6 +7,9 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 import { Role } from './Role.entity';
 
@@ -15,8 +18,12 @@ import { Merchant } from './Merchant.entity';
 
 @ObjectType()
 @Entity('user')
+@Tree('closure-table', {
+  ancestorColumnName: (column) => `${column.propertyName}_parent`,
+  descendantColumnName: (column) => `${column.propertyName}_child`,
+})
 export class User extends BaseEntity {
-  @Field(()=>ID)
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -57,12 +64,11 @@ export class User extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @Field(() => User)
-  @ManyToOne((type) => User, (user) => user.children)
-  @JoinColumn({ name: 'parent' })
-  parent: User;
-
-  @Field(() => [User])
-  @OneToMany((type) => User, (user) => user.parent)
+  @TreeChildren()
   children: User[];
+
+  @TreeParent({
+    onDelete: 'SET NULL'
+  })
+  parent: User;
 }

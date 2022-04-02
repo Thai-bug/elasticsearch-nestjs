@@ -1,21 +1,17 @@
 import { IUserService } from '@Interfaces/Services/IUser.service';
 import { Injectable } from '@nestjs/common';
-import {
-  Not
-} from 'typeorm'
+import { getManager, Not } from 'typeorm';
 
 import { User } from '@Entities/User.entity';
 import { BaseService } from './BaseService';
 import { UserRepository } from '@Repositories/User.repository';
 import { MyLogger } from './LoggerService';
 import { compare } from '@Utils/bcrypt';
-
+import { BaseTreeService } from './BaseTreeService';
 
 @Injectable()
-export class UserService
-  extends BaseService<User, UserRepository>
-  implements IUserService
-{
+// implements IUserService
+export class UserService extends BaseTreeService<User, UserRepository> {
   private readonly logger = new MyLogger(UserService.name);
   constructor(repository: UserRepository) {
     super(repository);
@@ -38,19 +34,27 @@ export class UserService
     return user;
   }
 
-  async list(option: any, offset: number, limit: number): Promise<[User[], number]> {
-    return this.repository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.children', 'children')
-      .leftJoinAndSelect('user.parent', 'parent')
-      .where('user.email like :email', { email: `%${option.search}%` })
-      .orWhere('user.firstName like :firstName', { firstName: `%${option.search}%` })
-      .orWhere('user.lastName like :lastName', { lastName: `%${option.search}%` })
-      .andWhere({role: { id: Not(1) } })
-      .take(limit)
-      .skip(offset)
-      .orderBy('user.createdAt', 'DESC')
-      .getManyAndCount();
+  async list(option: any, offset: number, limit: number): Promise<User> {
+    const demo = await this.repository.findTrees();
+
+    return await this.repository.findDescendantsTree(demo[0]);
+
+    // return this.repository
+    //   .createQueryBuilder('user')
+    //   .leftJoinAndSelect('user.children', 'children')
+    //   .leftJoinAndSelect('user.parent', 'parent')
+    //   .where('user.email like :email', { email: `%${option.search}%` })
+    //   .orWhere('user.firstName like :firstName', {
+    //     firstName: `%${option.search}%`,
+    //   })
+    //   .orWhere('user.lastName like :lastName', {
+    //     lastName: `%${option.search}%`,
+    //   })
+    //   .andWhere({ role: { id: Not(1) } })
+    //   .take(limit)
+    //   .skip(offset)
+    //   .orderBy('user.createdAt', 'DESC')
+    //   .getManyAndCount();
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -67,5 +71,15 @@ export class UserService
     hash: string,
   ): Promise<boolean> {
     return await compare(password, hash);
+  }
+
+  public async updateClosure(user: User, parent: User): Promise<boolean> {
+    const entityManager = getManager().getTreeRepository(User);
+    const query = entityManager.query(
+      `
+    UPDATE "user_closure" set id_parent = ${parent.id} where id_child = ${user.id} `,
+    );
+
+    return query;
   }
 }
