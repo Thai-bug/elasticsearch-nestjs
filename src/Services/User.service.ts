@@ -42,8 +42,6 @@ export class UserService extends BaseTreeService<User, UserRepository> {
   ): Promise<[User[], number]> {
     const parent = await this.repository.findTrees({relations: ['parent']});
 
-    console.log(parent)
-
     return await this.repository
       .createDescendantsQueryBuilder(
         'user',
