@@ -75,8 +75,10 @@ export class MerchantController {
       creator: JSON.parse(serialize(user)),
     };
 
+    const merchant = this.merchantService.create(validateRequest);
+
     const result = await this.merchantService
-      .store(validateRequest)
+      .store(merchant)
       .catch((err) => err);
 
     switch (+result.code) {

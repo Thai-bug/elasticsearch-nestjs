@@ -31,6 +31,12 @@ export const ValidateCreateProduct = Joi.object({
     .messages({
       'any.required': 'category is required',
     }),
+  vat: Joi.number().min(5).max(10).required().messages({
+    'number.base': 'vat must be a number',
+    'any.required': 'vat is required',
+    'number.min': 'vat must be between 5 and 10',
+    'number.max': 'vat must be between 5 and 10',
+  }),
 });
 
 export const ValidateUpdateProduct = Joi.object({

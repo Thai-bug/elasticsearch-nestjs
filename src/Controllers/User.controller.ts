@@ -90,8 +90,9 @@ export class UserController {
     info.code = randomString().toUpperCase();
     info.password = await hash(info.password);
     info.parent = currentUser;
-    // let result = await getManager().getTreeRepository(User).save(info);
-    let result = await this.userService.store(info);
+
+    const user = this.userService.create(info);
+    let result = await this.userService.store(user);
 
     await this.userService.updateClosure(result, currentUser);
 

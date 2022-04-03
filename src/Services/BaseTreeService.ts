@@ -15,6 +15,10 @@ export class BaseTreeService<
     return this.repository.find();
   }
 
+  create(info): T[] {
+    return this.repository.create(info);
+  }
+
   findById(id: EntityId): Promise<T> {
     return this.repository.findOne(id);
   }

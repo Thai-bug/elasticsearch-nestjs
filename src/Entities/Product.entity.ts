@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -17,21 +18,29 @@ import { IKeyAble } from '@Interfaces/Meta/Base.meta';
 @Entity('product')
 @ObjectType()
 export class Product extends BaseEntity {
-  @Field(()=>ID)
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   @Column('text', { unique: true, default: '', name: 'code' })
   code: string;
 
-  @Field(({nullable: true}))
+  @Field({ nullable: true })
   @Column('text', { nullable: false, name: 'title' })
   title: string;
 
-  @Field({nullable: true})
-  @Column('int', { name: 'description' })
+  @Field({ nullable: true })
+  @Column('bigint', { name: 'price', nullable: true })
   price: number;
+
+  @Field({ nullable: true })
+  @Column('int', { name: 'vat' })
+  vat: number;
+
+  @Field({ nullable: true })
+  @Column('bigint', { name: 'net', nullable: true })
+  net: number;
 
   @Field((type) => Category)
   @ManyToOne((type) => Category, (category) => category.products, {
@@ -47,23 +56,28 @@ export class Product extends BaseEntity {
   @JoinColumn({ name: 'manufacture_id' })
   manufacture: Manufacture;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   @Column('boolean', { name: 'status', default: true })
   status: boolean;
 
-  @Field(() => GraphQLJSONObject, {nullable: true})
+  @Field(() => GraphQLJSONObject, { nullable: true })
   @Column('jsonb', { name: 'extra_info', default: {} })
   extraInfo: IKeyAble;
 
-  @Field(()=> GraphQLJSONObject, {nullable: true})
+  @Field(() => GraphQLJSONObject, { nullable: true })
   @Column('jsonb', { name: 'meta_info', default: {} })
   @Exclude()
   metaInfo: IKeyAble;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   @Column('timestamp', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
+
+  @BeforeInsert()
+  async beforeInsert() {
+    this.net = +(+this.price.toFixed(0) * (1 + +this.vat / 100)).toFixed(0);
+  }
 }

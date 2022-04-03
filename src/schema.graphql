@@ -49,6 +49,8 @@ type Product {
   code: String
   title: String
   price: Float
+  vat: Float
+  net: Float
   category: Category!
   manufacture: Manufacture!
   status: Boolean

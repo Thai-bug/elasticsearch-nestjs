@@ -89,9 +89,7 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('create')
-  async createCategory(
-    @CurrentUser() user: User,
-    @Request() request: Request) {
+  async createCategory(@CurrentUser() user: User, @Request() request: Request) {
     const validateRequest = await validate(
       ValidateCreateCategory,
       request['body'],
@@ -100,12 +98,13 @@ export class CategoryController {
     if (validateRequest instanceof Error)
       return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
 
-      validateRequest.extraInfo = {};
-      validateRequest.metaInfo.creator = user;
+    validateRequest.extraInfo = {};
+    validateRequest.metaInfo = {};
+    validateRequest.metaInfo.creator = user;
 
-    const result = await this.categoryService
-      .store(request['body'])
-      .catch((e) => e);
+    const category = this.categoryService.create(validateRequest);
+
+    const result = await this.categoryService.store(category).catch((e) => e);
 
     switch (+result.code) {
       case 23505:
@@ -125,9 +124,7 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('update')
-  async updateCategory(
-    @CurrentUser() user: User,
-    @Request() request: Request) {
+  async updateCategory(@CurrentUser() user: User, @Request() request: Request) {
     const validateRequest = await validate(
       ValidateUpdateCategory,
       request['body'],
@@ -140,17 +137,17 @@ export class CategoryController {
     if (!category)
       return response(HttpStatus.BAD_REQUEST, 'category is not existed', null);
 
-      const updatedContent = JSON.parse(serialize(validateRequest));
+    const updatedContent = JSON.parse(serialize(validateRequest));
 
     validateRequest.metaInfo = category.metaInfo;
-    if(!validateRequest.metaInfo.editors){
+    if (!validateRequest.metaInfo.editors) {
       validateRequest.metaInfo.editors = [];
-    } 
+    }
 
     validateRequest.metaInfo.editors.unshift({
       editor: JSON.parse(serialize(user)),
       editedContent: updatedContent,
-      editedAt: getCurrentTime()
+      editedAt: getCurrentTime(),
     });
 
     const result = await this.categoryService
@@ -170,5 +167,4 @@ export class CategoryController {
 
     return response(200, 'success', result);
   }
-
 }

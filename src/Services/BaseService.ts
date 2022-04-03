@@ -15,6 +15,10 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>>
     return this.repository.find();
   }
 
+  create(data: any): T[] {
+    return this.repository.create(data);
+  }
+
   findById(id: EntityId): Promise<T> {
     return this.repository.findOne(id);
   }
@@ -23,7 +27,7 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>>
     return this.repository.findByIds(ids);
   }
 
-  store(data: any): Promise<T> {
+  async store(data: any): Promise<T> {
     return this.repository.save(data).catch((e) => e);
   }
 

@@ -67,16 +67,20 @@ export class ProductController {
     const body = request['body'];
     const validateRequest = await validate(ValidateCreateProduct, body);
     if (validateRequest instanceof Error) {
-      return response(400, 'validation error', validateRequest);
+      return response(400, 'validation error', validateRequest.message);
     }
 
     validateRequest.metaInfo = {
       creator: JSON.parse(serialize(user)),
     };
 
+    const product = this.productService.create(validateRequest);
+
     const result = await this.productService
-      .store(validateRequest)
+      .store(product)
       .catch((e) => e);
+
+      console.log(product);
 
     switch (+result.code) {
       case 23505:
@@ -89,7 +93,11 @@ export class ProductController {
     if (result instanceof Error)
       return response(HttpStatus.BAD_REQUEST, result.message, null);
 
-    return response(200, 'success', JSON.parse(serialize(result)));
+    return response(
+      200,
+      'success',
+      JSON.parse(serialize(result)),
+    );
   }
 
   @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')

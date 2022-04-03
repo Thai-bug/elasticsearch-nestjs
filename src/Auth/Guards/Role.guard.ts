@@ -6,7 +6,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CategoryService } from '@Services/Category.service';
 import { UserService } from '@Services/User.service';
 import { Observable } from 'rxjs';
 
@@ -28,6 +27,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
+
     return new Promise((resolve, reject) => {
       this.userService.findById(request.user.id).then((user) => {
         if (!user || !user.status) return resolve(false);

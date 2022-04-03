@@ -56,8 +56,10 @@ export class ManufactureController {
       creator: JSON.parse(serialize(user)),
     };
 
+    const manufacture = this.manufactureService.create(validateRequest);
+
     const result = await this.manufactureService
-      .store(validateRequest)
+      .store(manufacture)
       .catch((e) => e);
 
     switch (+result.code) {
