@@ -80,8 +80,6 @@ export class ProductController {
       .store(product)
       .catch((e) => e);
 
-      console.log(product);
-
     switch (+result.code) {
       case 23505:
         return response(HttpStatus.BAD_REQUEST, 'Code is existed', null);

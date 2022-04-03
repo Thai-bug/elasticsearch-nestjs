@@ -28,6 +28,8 @@ import { join } from 'path';
 import { Merchant } from '@Entities/Merchant.entity';
 import { MerchantModule } from '@Modules/Merchant.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { OrderStatus } from '@Entities/OrderStatus.entity';
+import { Order } from '@Entities/Order.entity';
 
 @Module({
   imports: [
@@ -41,7 +43,7 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
       path: '/api/graph/v1',
       formatError: (error: GraphQLError) => {
         const graphQLFormattedError: GraphQLFormattedError = {
-          message:  error?.message,
+          message: error?.message,
         };
         return graphQLFormattedError;
       },
@@ -61,7 +63,16 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Category, Manufacture, Product, Merchant],
+      entities: [
+        User,
+        Role,
+        Category,
+        Manufacture,
+        Product,
+        Merchant,
+        OrderStatus,
+        Order,
+      ],
       synchronize: true,
       autoLoadEntities: true,
     }),
@@ -70,7 +81,7 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
     PrivateModule,
     ManufactureModule,
     ProductModule,
-    MerchantModule
+    MerchantModule,
   ],
 })
 export class AppModule implements NestModule {
