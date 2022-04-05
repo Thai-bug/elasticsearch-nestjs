@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderStatus } from './OrderStatus.entity';
+import { User } from './User.entity';
 
 @Entity('order')
 export class Order extends BaseEntity {
@@ -21,4 +22,8 @@ export class Order extends BaseEntity {
   })
   @JoinColumn({ name: 'status_id' })
   status: OrderStatus;
+
+  @ManyToOne((type) => User, (user: User) => user.orders)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

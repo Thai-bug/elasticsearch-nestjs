@@ -30,6 +30,7 @@ import { MerchantModule } from '@Modules/Merchant.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { OrderStatus } from '@Entities/OrderStatus.entity';
 import { Order } from '@Entities/Order.entity';
+import { MerchantProduct } from '@Entities/MerchantProduct.entity';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { Order } from '@Entities/Order.entity';
         Merchant,
         OrderStatus,
         Order,
+        MerchantProduct
       ],
       synchronize: true,
       autoLoadEntities: true,

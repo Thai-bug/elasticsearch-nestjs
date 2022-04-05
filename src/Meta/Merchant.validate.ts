@@ -1,3 +1,11 @@
+import {
+  convertToMoment,
+  getCurrentTime,
+  getMoment,
+  isAfter,
+  isBefore,
+  isValidDate,
+} from '@Utils/moment.utils';
 import * as Joi from 'joi';
 
 export const ValidateCreateMerchant = Joi.object({
@@ -59,4 +67,64 @@ export const CreateMerchantUserValidate = Joi.object({
       ),
     ),
   role: Joi.allow(0),
+});
+
+export const AddProductValidate = Joi.object({
+  merchant: Joi.object({
+    id: Joi.number().invalid(0).required().messages({
+      'number.base': 'merchant.id must be a number',
+      'any.required': 'merchant.id is required',
+      'any.invalid': 'merchant.id is invalid',
+    }),
+  })
+    .required()
+    .messages({
+      'any.required': 'merchant is required',
+    }),
+  product: Joi.object({
+    id: Joi.number().invalid(0).required().messages({
+      'number.base': 'product.id must be a number',
+      'any.required': 'product.id is required',
+      'any.invalid': 'product.id is invalid',
+    }),
+  })
+    .required()
+    .messages({
+      'any.required': 'product is required',
+    }),
+
+  commission: Joi.number().min(0).max(100).required().messages({
+    'number.base': 'commission must be a number',
+    'number.min': 'commission must be at least 0',
+    'number.max': 'commission must be at most 100',
+    'any.required': 'commission is required',
+  }),
+
+  fromDate: Joi.string()
+    .regex(
+      RegExp(/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/i),
+    )
+    .error(new Error('fromDate is invalid'))
+    .custom((value, helpers) => {
+      if (isAfter(value, getMoment()) && isValidDate(value))
+        return convertToMoment(value, 'DD/MM/YYYY').startOf('day');
+      return helpers.error('date.invalid');
+    })
+    .required()
+    .messages({
+      'any.required': 'fromDate is required',
+      'string.empty': 'fromDate is required',
+    }),
+
+  toDate: Joi.string()
+    .regex(
+      RegExp(/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/i),
+    )
+    .error(new Error('toDate is invalid'))
+    .custom((value, helpers) => {
+      if (isValidDate(value))
+        return convertToMoment(value, 'DD/MM/YYYY').endOf('day');
+      return helpers.error('date.invalid');
+    })
+    .allow(),
 });

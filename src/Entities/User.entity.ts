@@ -15,6 +15,7 @@ import { Role } from './Role.entity';
 
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Merchant } from './Merchant.entity';
+import { Order } from './Order.entity';
 
 @ObjectType()
 @Entity('user')
@@ -64,16 +65,19 @@ export class User extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @ManyToOne(type=>Merchant, {eager: true})
-  @JoinColumn({name: 'merchant_id'})
-  merchant: Merchant
+  @OneToMany((type) => Order, (order: Order) => order.user)
+  orders: Order[];
+
+  @ManyToOne((type) => Merchant, { eager: true })
+  @JoinColumn({ name: 'merchant_id' })
+  merchant: Merchant;
 
   @TreeChildren()
   children: User[];
 
   @TreeParent({
-    onDelete: 'SET NULL'
+    onDelete: 'SET NULL',
   })
-  @JoinColumn({name: 'parent_id'})
+  @JoinColumn({ name: 'parent_id' })
   parent: User;
 }

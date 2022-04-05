@@ -16,19 +16,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type User {
-  id: ID!
-  code: String!
-  firstName: String!
-  lastName: String!
-  email: String!
-  password: String!
-  status: Boolean!
-  createdAt: DateTime!
-  role: Role!
-}
-
-type Manufacture {
+type Category {
   id: ID!
   code: String!
   title: String!
@@ -43,6 +31,17 @@ type Manufacture {
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSONObject
+
+type Manufacture {
+  id: ID!
+  code: String!
+  title: String!
+  products: [Product!]!
+  status: Boolean!
+  extraInfo: JSONObject!
+  metaInfo: JSONObject!
+  createdAt: DateTime!
+}
 
 type Product {
   id: ID!
@@ -59,15 +58,16 @@ type Product {
   createdAt: DateTime
 }
 
-type Category {
+type User {
   id: ID!
   code: String!
-  title: String!
-  products: [Product!]!
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
   status: Boolean!
-  extraInfo: JSONObject!
-  metaInfo: JSONObject!
   createdAt: DateTime!
+  role: Role!
 }
 
 type ProductResponse {

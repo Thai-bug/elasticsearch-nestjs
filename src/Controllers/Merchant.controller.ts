@@ -1,5 +1,8 @@
+import { Merchant } from '@Entities/Merchant.entity';
+import { Product } from '@Entities/Product.entity';
 import { User } from '@Entities/User.entity';
 import {
+  AddProductValidate,
   CreateMerchantUserValidate,
   ValidateCreateMerchant,
   ValidateUpdateMerchant,
@@ -19,10 +22,12 @@ import {
 } from '@nestjs/common';
 import { MyLogger } from '@Services/LoggerService';
 import { MerchantService } from '@Services/Merchant.service';
+import { MerchantProductService } from '@Services/MerchantProduct.service';
+import { ProductService } from '@Services/Product.service';
 import { UserService } from '@Services/User.service';
 import { hash } from '@Utils/bcrypt';
 import { randomString } from '@Utils/crypto';
-import { getCurrentTime } from '@Utils/moment.utils';
+import { getCurrentTime, isAfter } from '@Utils/moment.utils';
 import { response } from '@Utils/response.utils';
 import { validate } from '@Utils/validate.utils';
 import { Cache } from 'cache-manager';
@@ -40,6 +45,8 @@ export class MerchantController {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly merchantService: MerchantService,
     private readonly userService: UserService,
+    private readonly merchantProductService: MerchantProductService,
+    private readonly productService: ProductService,
   ) {}
 
   @Get('')
@@ -60,7 +67,7 @@ export class MerchantController {
     });
   }
 
-  @hasRoles('ADMIN, MANAGER, PRODUCT_MANAGER')
+  @hasRoles('ADMIN', 'MANAGER', 'PRODUCT_MANAGER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create')
   async createMerchant(@CurrentUser() user: User, @Request() request: Request) {
@@ -200,9 +207,57 @@ export class MerchantController {
     );
 
     return response(200, 'success', {
-      data
+      data,
       // data: JSON.parse(serialize(data[0])),
       // total: data[1],
     });
+  }
+
+  @hasRoles('MERCHANT_MANAGER', 'MERCHANT_PRODUCT', 'ADMIN', 'MANAGER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/add-product')
+  async addProduct(@Body() body: Request) {
+    const validateRequest = await validate(AddProductValidate, body);
+
+    if (validateRequest instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, validateRequest.message, null);
+
+    if (
+      validateRequest.toDate &&
+      validateRequest.fromDate.isAfter(validateRequest.toDate)
+    ) {
+      return response(
+        HttpStatus.BAD_REQUEST,
+        'invalid fromDate',
+        'fromDate must be before toDate',
+      );
+    }
+
+    const product = await this.productService.getProduct({
+      id: validateRequest.product.id,
+      status: true,
+    });
+
+    if (!product || !product.category.status || !product.manufacture.status)
+      return response(
+        HttpStatus.BAD_REQUEST,
+        'invalid product',
+        'product is not valid',
+      );
+
+    await this.merchantProductService.cancelActive(
+      validateRequest.merchant,
+      validateRequest.product,
+      validateRequest.fromDate,
+    );
+
+    const merchantProduct = this.merchantProductService.create(validateRequest);
+
+    const result = await this.merchantProductService.store(merchantProduct);
+
+    if (result instanceof Error)
+      return response(HttpStatus.BAD_REQUEST, 'failed', result.message);
+
+    return response(200, 'success', result);
   }
 }

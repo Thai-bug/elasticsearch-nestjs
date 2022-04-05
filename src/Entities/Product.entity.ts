@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from './Category.entity';
@@ -14,6 +15,7 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Exclude } from 'class-transformer';
 import { IKeyAble } from '@Interfaces/Meta/Base.meta';
+import { MerchantProduct } from './MerchantProduct.entity';
 
 @Entity('product')
 @ObjectType()
@@ -75,6 +77,9 @@ export class Product extends BaseEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
+
+  @OneToMany((type) => MerchantProduct, (merchant) => merchant.merchant)
+  merchants: MerchantProduct[];
 
   @BeforeInsert()
   async beforeInsert() {
