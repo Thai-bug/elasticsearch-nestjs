@@ -4,9 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OrderDetail } from './OrderDetail.entity';
 import { OrderStatus } from './OrderStatus.entity';
+import { Product } from './Product.entity';
 import { User } from './User.entity';
 
 @Entity('order')
@@ -26,4 +29,19 @@ export class Order extends BaseEntity {
   @ManyToOne((type) => User, (user: User) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany((type) => OrderDetail, (orderDetail: OrderDetail) => orderDetail.order)
+  orderDetails: OrderDetail[];
+
+  @Column('timestamp', {
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
+
+  @Column('timestamp', {
+    name: 'paid_date',
+    nullable: true
+  })
+  paidDate: Date;
 }
