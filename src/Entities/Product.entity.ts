@@ -16,6 +16,8 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 import { Exclude } from 'class-transformer';
 import { IKeyAble } from '@Interfaces/Meta/Base.meta';
 import { MerchantProduct } from './MerchantProduct.entity';
+import { Order } from './Order.entity';
+import { OrderDetail } from './OrderDetail.entity';
 
 @Entity('product')
 @ObjectType()
@@ -80,6 +82,9 @@ export class Product extends BaseEntity {
 
   @OneToMany((type) => MerchantProduct, (merchant) => merchant.merchant)
   merchants: MerchantProduct[];
+
+  @OneToMany((type) => OrderDetail, (orderDetail) => orderDetail.product)
+  orderDetails: OrderDetail[];
 
   @BeforeInsert()
   async beforeInsert() {

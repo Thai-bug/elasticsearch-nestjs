@@ -31,6 +31,8 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { OrderStatus } from '@Entities/OrderStatus.entity';
 import { Order } from '@Entities/Order.entity';
 import { MerchantProduct } from '@Entities/MerchantProduct.entity';
+import { OrderDetail } from '@Entities/OrderDetail.entity';
+import { OrderModule } from '@Modules/Order.module';
 
 @Module({
   imports: [
@@ -73,7 +75,8 @@ import { MerchantProduct } from '@Entities/MerchantProduct.entity';
         Merchant,
         OrderStatus,
         Order,
-        MerchantProduct
+        MerchantProduct,
+        OrderDetail
       ],
       synchronize: true,
       autoLoadEntities: true,
@@ -84,6 +87,7 @@ import { MerchantProduct } from '@Entities/MerchantProduct.entity';
     ManufactureModule,
     ProductModule,
     MerchantModule,
+    OrderModule
   ],
 })
 export class AppModule implements NestModule {

@@ -27,7 +27,7 @@ import { ProductService } from '@Services/Product.service';
 import { UserService } from '@Services/User.service';
 import { hash } from '@Utils/bcrypt';
 import { randomString } from '@Utils/crypto';
-import { getCurrentTime, isAfter } from '@Utils/moment.utils';
+import { getCurrentTime } from '@Utils/moment.utils';
 import { response } from '@Utils/response.utils';
 import { validate } from '@Utils/validate.utils';
 import { Cache } from 'cache-manager';
@@ -47,7 +47,7 @@ export class MerchantController {
     private readonly userService: UserService,
     private readonly merchantProductService: MerchantProductService,
     private readonly productService: ProductService,
-  ) {}
+  ) { }
 
   @Get('')
   @UseInterceptors(ClassSerializerInterceptor)
@@ -199,15 +199,15 @@ export class MerchantController {
     const offset = +request['query'].page || 0;
     const search = request['query'].search || '';
 
-    const data = await this.userService.list(
-      currentUser,
-      { search },
-      offset,
-      limit,
-    );
+    // const data = await this.userService.list(
+    //   currentUser,
+    //   { search },
+    //   offset,
+    //   limit,
+    // );
 
     return response(200, 'success', {
-      data,
+      // data,
       // data: JSON.parse(serialize(data[0])),
       // total: data[1],
     });
