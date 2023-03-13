@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ElasticService } from 'src/elastic/elastic.service';
+import { PostElasticService } from 'src/elastic/post-elastic.service';
 import { Repository, In } from 'typeorm';
 import { Post } from './post.entity';
 
@@ -8,18 +8,18 @@ import { Post } from './post.entity';
 export class PostService {
   constructor(
     @InjectRepository(Post, 'MAIN_DATABASE') private readonly postRepository: Repository<Post>,
-    private readonly elasticService: ElasticService
+    private readonly postElasticService: PostElasticService
   ) { }
 
   async createPost(post: Post) {
     await this.postRepository.save(post);
-    console.log(await this.elasticService.indexPost(post));
+    await this.postElasticService.indexPost(post)
     return post
   }
 
   async searchForPosts(text: string) {
-    const results = await this.elasticService.search(text);
-    // await this.elasticService.remove()
+    const results = await this.postElasticService.search(text);
+    await this.postElasticService.remove()
     const ids = results.map(result => result.id);
     if (!ids.length) {
       return [];
